@@ -22,7 +22,7 @@ From the [Roughtime](https://roughtime.googlesource.com/roughtime) project page:
   > that doesn't depend on any particular time server, and in such a way that, if a time 
   > server does misbehave, clients end up with cryptographic proof of it.
   
-The protocol was created by Adam Langley and Robert Obryk.
+The protocol was created by Adam Langley and Robert Obryk at Google.
 
 # Contributors
 * Stuart Stock, original author (stuart {at} int08h.com)
