@@ -2,7 +2,16 @@
 A Netty-based implementation of the [Roughtime](https://roughtime.googlesource.com/roughtime) 
 secure time synchronization protocol.
 
-# Implementation Status
+## Links
+* [Nearenough Github repo](https://github.com/int08h/nearenough)
+* [Roughtime project](https://roughtime.googlesource.com/roughtime)
+* [Netty project](http://netty.io/)
+
+## Building
+Nearenough bundles all required dependencies in the `lib` directory. Add those `.jar` files to
+your IDE's project classpath. Building is IDE-only for the moment. 
+
+## Implementation Status
 * **Server**
 
   |Feature|State|
@@ -15,16 +24,7 @@ secure time synchronization protocol.
 * **Client**
   * Not started
 
-# Links
-* [Nearenough Github repo](https://github.com/int08h/nearenough)
-* [Roughtime project](https://roughtime.googlesource.com/roughtime)
-* [Netty project](http://netty.io/)
-
-# Building
-Nearenough bundles all required dependencies in the `lib` directory. Add those `.jar` files to
-your IDE's project classpath. Building is IDE-only for the moment. 
-
-# About the Roughtime Protocol
+## About the Roughtime Protocol
 From the [Roughtime](https://roughtime.googlesource.com/roughtime) project page:
 
   > Roughtime is a protocol that aims to achieve rough time synchronisation in a secure way 
@@ -33,10 +33,10 @@ From the [Roughtime](https://roughtime.googlesource.com/roughtime) project page:
   
 The protocol was created by Adam Langley and Robert Obryk at Google.
 
-# Contributors
+## Contributors
 * Stuart Stock, original author (stuart {at} int08h.com)
 
-# Copyright and License
+## Copyright and License
 Nearenough is Copyright (c) 2017 int08h, LLC. All rights reserved. 
 
 int08h, LLC licenses this file to you under the Apache License, version 2.0 (the "License"); you 
