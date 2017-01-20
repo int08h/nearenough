@@ -2,6 +2,10 @@
 A Netty-based implementation of the [Roughtime](https://roughtime.googlesource.com/roughtime/) 
 secure time synchronization protocol.
 
+# Status
+| Server | Work in-progress. Not ready for production use.|
+| Client | Work in-progress. Not ready for production use.|
+
 # Links
 * [Nearenough Github repo](https://github.com/int08h/nearenough)
 * [Roughtime project](https://roughtime.googlesource.com/roughtime)
@@ -17,6 +21,8 @@ From the [Roughtime](https://roughtime.googlesource.com/roughtime) project page:
   > Roughtime is a protocol that aims to achieve rough time synchronisation in a secure way 
   > that doesn't depend on any particular time server, and in such a way that, if a time 
   > server does misbehave, clients end up with cryptographic proof of it.
+  
+The protocol was created by Adam Langley and Robert Obryk.
 
 # Contributors
 * Stuart Stock, original author (stuart {at} int08h.com)
