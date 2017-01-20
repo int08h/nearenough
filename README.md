@@ -1,10 +1,19 @@
 # Nearenough
-A Netty-based implementation of the [Roughtime](https://roughtime.googlesource.com/roughtime/) 
+A Netty-based implementation of the [Roughtime](https://roughtime.googlesource.com/roughtime) 
 secure time synchronization protocol.
 
-# Status
-| Server | Work in-progress. Not ready for production use.|
-| Client | Work in-progress. Not ready for production use.|
+# Implementation Status
+* **Server**
+
+  |Feature|State|
+  |:-----:|:---:|
+  | Parse valid client request          | DONE |
+  | Single-node response                | Not started |
+  | Nested (full Merkle tree) responses | Not started |
+  | Long-term key management            | Not started |
+  
+* **Client**
+  * Not started
 
 # Links
 * [Nearenough Github repo](https://github.com/int08h/nearenough)
@@ -13,7 +22,7 @@ secure time synchronization protocol.
 
 # Building
 Nearenough bundles all required dependencies in the `lib` directory. Add those `.jar` files to
-your IDE's project/library path. Building is IDE only for the moment; a Maven build is TODO.
+your IDE's project classpath. Building is IDE-only for the moment. 
 
 # About the Roughtime Protocol
 From the [Roughtime](https://roughtime.googlesource.com/roughtime) project page:
