@@ -7,7 +7,12 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import nearenough.oopsies.InvalidRoughTimeMessage;
+import nearenough.exceptions.InvalidNumTagsException;
+import nearenough.exceptions.MessageTooShortException;
+import nearenough.exceptions.MessageUnalignedException;
+import nearenough.exceptions.TagOffsetOverflowException;
+import nearenough.exceptions.TagOffsetUnalignedException;
+import nearenough.exceptions.TagsNotIncreasingException;
 
 public final class RtMessage {
 
@@ -43,7 +48,7 @@ public final class RtMessage {
 
     // Spec says max # tags can be 2^32-1, but capping at 64k tags for the moment.
     if (readNumTags < 0 || readNumTags > 0xffff) {
-      throw new InvalidRoughTimeMessage("invalid num_tags value " + readNumTags);
+      throw new InvalidNumTagsException("invalid num_tags value " + readNumTags);
     }
 
     return readNumTags;
@@ -70,7 +75,7 @@ public final class RtMessage {
       long currTag = msg.readUnsignedInt();
 
       if (currTag < prevTag) {
-        throw new InvalidRoughTimeMessage(
+        throw new TagsNotIncreasingException(
             "tags not strictly increasing: prev " + prevTag + ", curr " + currTag
         );
       }
@@ -100,10 +105,10 @@ public final class RtMessage {
       int offset = msg.readInt();
 
       if ((offset % 4) != 0) {
-        throw new InvalidRoughTimeMessage("offset " + i + " not multiple of 4: " + offset);
+        throw new TagOffsetUnalignedException("offset " + i + " not multiple of 4: " + offset);
       }
       if (offset < 0 || offset > endOfPayload) {
-        throw new InvalidRoughTimeMessage("offset " + i + " overflow: " + offset);
+        throw new TagOffsetOverflowException("offset " + i + " overflow: " + offset);
       }
 
       offsets[i + 1] = offset;
@@ -116,10 +121,10 @@ public final class RtMessage {
     int readableBytes = msg.readableBytes();
 
     if (readableBytes < 4) {
-      throw new InvalidRoughTimeMessage("too short, <4 bytes total");
+      throw new MessageTooShortException("too short, <4 bytes total");
     }
     if ((readableBytes % 4) != 0) {
-      throw new InvalidRoughTimeMessage("message length not multiple of 4: " + readableBytes);
+      throw new MessageUnalignedException("message length not multiple of 4: " + readableBytes);
     }
   }
 
@@ -127,7 +132,9 @@ public final class RtMessage {
     int expectedReadable = 4 * ((numTags - 1) + numTags);
 
     if (msg.readableBytes() < expectedReadable) {
-      throw new InvalidRoughTimeMessage("too short, insufficient length for numTags of " + numTags);
+      throw new MessageTooShortException(
+          "too short, insufficient length for numTags of " + numTags
+      );
     }
   }
 
