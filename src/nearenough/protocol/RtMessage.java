@@ -2,22 +2,19 @@ package nearenough.protocol;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
+import nearenough.exceptions.*;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
-import nearenough.exceptions.InvalidNumTagsException;
-import nearenough.exceptions.MessageTooShortException;
-import nearenough.exceptions.MessageUnalignedException;
-import nearenough.exceptions.TagOffsetOverflowException;
-import nearenough.exceptions.TagOffsetUnalignedException;
-import nearenough.exceptions.TagsNotIncreasingException;
-
+/**
+ * An immutable Roughtime protocol message.
+ */
 public final class RtMessage {
 
   private final int numTags;
-  private final Map<Long, byte[]> map;
+  private final Map<RtTag, byte[]> map;
 
   public RtMessage(ByteBuf msg) {
     checkMessageLength(msg);
@@ -39,42 +36,44 @@ public final class RtMessage {
     return numTags;
   }
 
-  public byte[] get(long tag) {
+  public byte[] get(RtTag tag) {
     return map.get(tag);
   }
 
   private int extractNumTags(ByteBuf msg) {
-    int readNumTags = msg.readInt();
+    long readNumTags = msg.readUnsignedIntLE();
 
     // Spec says max # tags can be 2^32-1, but capping at 64k tags for the moment.
     if (readNumTags < 0 || readNumTags > 0xffff) {
       throw new InvalidNumTagsException("invalid num_tags value " + readNumTags);
     }
 
-    return readNumTags;
+    return (int) readNumTags;
   }
 
-  private Map<Long, byte[]> extractSingleMapping(ByteBuf msg) {
-    long rawTag = msg.readUnsignedInt();
+  private Map<RtTag, byte[]> extractSingleMapping(ByteBuf msg) {
+    long uintTag = msg.readUnsignedIntLE();
+    RtTag tag = RtTag.fromUnsignedInt((int) uintTag);
 
     byte[] value = new byte[msg.readableBytes()];
     msg.readBytes(value);
 
-    return Collections.singletonMap(rawTag, value);
+    return Collections.singletonMap(tag, value);
   }
 
-  private Map<Long, byte[]> extractMultiMapping(ByteBuf msg) {
+  private Map<RtTag, byte[]> extractMultiMapping(ByteBuf msg) {
     // This will leave the reader index positioned at the first tag
     int[] offsets = extractOffsets(msg);
 
     int startOfValues = msg.readerIndex() + (4 * numTags);
-    Map<Long, byte[]> mapping = new LinkedHashMap<>(offsets.length);
-    long prevTag = 0L;
+    Map<RtTag, byte[]> mapping = new EnumMap<>(RtTag.class);
+    RtTag prevTag = null;
 
     for (int i = 0; i < offsets.length; i++) {
-      long currTag = msg.readUnsignedInt();
+      long uintCurrTag = msg.readUnsignedIntLE();
+      RtTag currTag = RtTag.fromUnsignedInt((int) uintCurrTag);
 
-      if (currTag < prevTag) {
+      if ((prevTag != null) && (currTag.ordinal() < prevTag.ordinal())) {
         throw new TagsNotIncreasingException(
             "tags not strictly increasing: prev " + prevTag + ", curr " + currTag
         );
@@ -84,8 +83,8 @@ public final class RtMessage {
       int valueLen = ((i + 1) == offsets.length) ? msg.readableBytes() - offsets[i]
                                                  : offsets[i + 1] - offsets[i];
       byte[] valueBytes = new byte[valueLen];
-
       msg.getBytes(valueIdx, valueBytes);
+
       mapping.put(currTag, valueBytes);
       prevTag = currTag;
     }
@@ -102,7 +101,7 @@ public final class RtMessage {
     offsets[0] = 0;
 
     for (int i = 0; i < numOffsets; i++) {
-      int offset = msg.readInt();
+      long offset = msg.readUnsignedIntLE();
 
       if ((offset % 4) != 0) {
         throw new TagOffsetUnalignedException("offset " + i + " not multiple of 4: " + offset);
@@ -111,7 +110,7 @@ public final class RtMessage {
         throw new TagOffsetOverflowException("offset " + i + " overflow: " + offset);
       }
 
-      offsets[i + 1] = offset;
+      offsets[i + 1] = (int) offset;
     }
 
     return offsets;

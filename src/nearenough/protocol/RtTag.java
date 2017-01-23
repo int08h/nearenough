@@ -1,11 +1,11 @@
 package nearenough.protocol;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.Unpooled;
+import nearenough.exceptions.InvalidTagException;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public enum RtTag {
 
@@ -24,38 +24,37 @@ public enum RtTag {
   SIG('S', 'I', 'G', 0x00),
   SREP('S', 'R', 'E', 'P');
 
-  public static RtTag fromUnsignedInt(long value) {
-    if (mapping == null) {
-      createMapping();
+  private static final Map<Integer, RtTag> wireToTag = Arrays.stream(values())
+      .collect(Collectors.toMap(RtTag::value, Function.identity()));
+
+  public static RtTag fromUnsignedInt(int val) {
+    RtTag tag = wireToTag.get(val);
+
+    if (tag != null) {
+      return tag;
+    } else {
+      String exMsg = String.format(
+          "'%c%c%c%c' (0x%08x)",
+          (char) (val >> 24 & 0xff),
+          (char) (val >> 16 & 0xff),
+          (char) (val >> 8 & 0xff),
+          (char) (val & 0xff),
+          val
+      );
+      throw new InvalidTagException(exMsg);
     }
-    return mapping.get(value);
   }
 
-  private static Map<Long, RtTag> mapping;
-
-  private final ByteBuf buf;
+  private final int intValueLE;
 
   RtTag(int... bytes) {
-    this.buf = Unpooled.unreleasableBuffer(ByteBufAllocator.DEFAULT.buffer(4));
-
-    for (int i = 0; i < bytes.length; i++) {
-      buf.setByte(i, bytes[i]);
-    }
+    this.intValueLE = (bytes[3] | bytes[2] << 8 | bytes[1] << 16 | bytes[0] << 24);
   }
 
-  public ByteBuf buf() {
-    return buf;
+  /**
+   * @return On-the-wire little endian value
+   */
+  public int value() {
+    return intValueLE;
   }
-
-  public long asUnsignedInt() {
-    return buf.getUnsignedInt(0);
-  }
-
-  private static void createMapping() {
-    mapping = new HashMap<>();
-    for (RtTag rtTag : values()) {
-      mapping.put(rtTag.asUnsignedInt(), rtTag);
-    }
-  }
-
 }
