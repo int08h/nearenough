@@ -145,7 +145,7 @@ public final class RtMessage {
     if (map != null) {
       map.forEach(
           (tag, value) -> {
-            sb.append("    ").append(String.format("0x%08x", tag)).append(" = ");
+            sb.append("    ").append(tag.name()).append(" = ");
             sb.append(ByteBufUtil.hexDump(value));
             sb.append('\n');
           }
