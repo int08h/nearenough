@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Roughtime protocol Tags
+ */
 public enum RtTag {
 
   CERT('C', 'E', 'R', 'T'),
@@ -24,37 +27,44 @@ public enum RtTag {
   SIG('S', 'I', 'G', 0x00),
   SREP('S', 'R', 'E', 'P');
 
+  // TODO(stuart) use primitive collection to eliminate boxing
   private static final Map<Integer, RtTag> wireToTag = Arrays.stream(values())
-      .collect(Collectors.toMap(RtTag::value, Function.identity()));
+      .collect(Collectors.toMap(RtTag::intValue, Function.identity()));
 
-  public static RtTag fromUnsignedInt(int val) {
-    RtTag tag = wireToTag.get(val);
+  /**
+   * Return the {@link RtTag} that corresponds to the provided uint32 value, or throw
+   * {@link InvalidTagException} if no mapping exists.
+   *
+   * @param tagValue unsigned 32-bit tag
+   *
+   * @return the {@link RtTag} that corresponds to the value, or throw
+   * {@link InvalidTagException} if no mapping exists.
+   */
+  public static RtTag fromUnsignedInt(int tagValue) throws InvalidTagException {
+    RtTag tag = wireToTag.get(tagValue);
 
     if (tag != null) {
       return tag;
     } else {
       String exMsg = String.format(
           "'%c%c%c%c' (0x%08x)",
-          (char) (val >> 24 & 0xff),
-          (char) (val >> 16 & 0xff),
-          (char) (val >> 8 & 0xff),
-          (char) (val & 0xff),
-          val
+          (char) (tagValue >> 24 & 0xff),
+          (char) (tagValue >> 16 & 0xff),
+          (char) (tagValue >> 8 & 0xff),
+          (char) (tagValue & 0xff),
+          tagValue
       );
       throw new InvalidTagException(exMsg);
     }
   }
 
-  private final int intValueLE;
+  private final int intValue;
 
   RtTag(int... bytes) {
-    this.intValueLE = (bytes[3] | bytes[2] << 8 | bytes[1] << 16 | bytes[0] << 24);
+    this.intValue = (bytes[3] | bytes[2] << 8 | bytes[1] << 16 | bytes[0] << 24);
   }
 
-  /**
-   * @return On-the-wire little endian value
-   */
-  public int value() {
-    return intValueLE;
+  private int intValue() {
+    return intValue;
   }
 }

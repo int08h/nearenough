@@ -10,12 +10,20 @@ import java.util.Map;
 
 /**
  * An immutable Roughtime protocol message.
+ * <p>
+ * Roughtime messages are a map of uint32's to arbitrary byte-strings. See the
+ * <a href="https://roughtime.googlesource.com/roughtime">Roughtime project site</a> for
+ * the specification and more details.
  */
 public final class RtMessage {
 
   private final int numTags;
   private final Map<RtTag, byte[]> map;
 
+  /**
+   * Create a new {@code RtMessage} by parsing the contents of the provided {@code ByteBuf}. The
+   * contents of {@code msg} must be a well-formed Roughtime message.
+   */
   public RtMessage(ByteBuf msg) {
     checkMessageLength(msg);
 
@@ -32,10 +40,16 @@ public final class RtMessage {
     }
   }
 
+  /**
+   * @return Number of protocol tags in this message
+   */
   public int numTags() {
     return numTags;
   }
 
+  /**
+   * @return The byte-string associated with {@code tag}, or {@code null} if no mapping exists.
+   */
   public byte[] get(RtTag tag) {
     return map.get(tag);
   }
@@ -62,7 +76,7 @@ public final class RtMessage {
   }
 
   private Map<RtTag, byte[]> extractMultiMapping(ByteBuf msg) {
-    // This will leave the reader index positioned at the first tag
+    // extractOffsets will leave the reader index positioned at the first tag
     int[] offsets = extractOffsets(msg);
 
     int startOfValues = msg.readerIndex() + (4 * numTags);
