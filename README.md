@@ -19,13 +19,6 @@ your IDE's project classpath. Building is IDE-only for the moment.
 ## Implementation Status
 Nearenough is in its infancy and very little is implemented. Expect significant changes as the code
 evolves.
-
-  |Feature|State|
-  |:-----:|:---:|
-  | Parse valid client request          | DONE |
-  | Single-node response                | Not started |
-  | Nested (full Merkle tree) responses | Not started |
-  | Long-term key management            | Not started |
   
 ## Contributors
 * Stuart Stock, original author (stuart {at} int08h.com)
