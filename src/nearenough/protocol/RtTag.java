@@ -1,14 +1,11 @@
 package nearenough.protocol;
 
+import io.netty.util.collection.IntObjectHashMap;
+import io.netty.util.collection.IntObjectMap;
 import nearenough.exceptions.InvalidTagException;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 /**
- * Roughtime protocol Tags
+ * Roughtime protocol Tags.
  */
 public enum RtTag {
 
@@ -27,18 +24,23 @@ public enum RtTag {
   SIG('S', 'I', 'G', 0x00),
   SREP('S', 'R', 'E', 'P');
 
-  // TODO(stuart) use primitive collection to eliminate boxing
-  private static final Map<Integer, RtTag> wireToTag = Arrays.stream(values())
-      .collect(Collectors.toMap(RtTag::intValue, Function.identity()));
+  // Primitive collection is used to eliminate boxing from the hot-path of fromUnsignedInt
+  private static final IntObjectMap<RtTag> wireToTag = new IntObjectHashMap<>(values().length);
+
+  static {
+    for (RtTag rtTag : values()) {
+      wireToTag.put(rtTag.wireValue(), rtTag);
+    }
+  }
 
   /**
-   * Return the {@link RtTag} that corresponds to the provided uint32 value, or throw
-   * {@link InvalidTagException} if no mapping exists.
+   * Return the {@link RtTag} that corresponds to the provided <em>little-endian</em> uint32 value,
+   * or throws {@link InvalidTagException} if no mapping exists.
    *
-   * @param tagValue unsigned 32-bit tag
+   * @param tagValue little-endian unsigned 32-bit tag
    *
-   * @return the {@link RtTag} that corresponds to the value, or throw
-   * {@link InvalidTagException} if no mapping exists.
+   * @return the {@link RtTag} that corresponds to the value, or throws {@link InvalidTagException}
+   * if no mapping exists.
    */
   public static RtTag fromUnsignedInt(int tagValue) throws InvalidTagException {
     RtTag tag = wireToTag.get(tagValue);
@@ -58,13 +60,14 @@ public enum RtTag {
     }
   }
 
-  private final int intValue;
+  private final int wireValue;
 
   RtTag(int... bytes) {
-    this.intValue = (bytes[3] | bytes[2] << 8 | bytes[1] << 16 | bytes[0] << 24);
+    // Per the spec, Roughtime tag values are little-endian on-the-wire
+    this.wireValue = (bytes[0] | bytes[1] << 8 | bytes[2] << 16 | bytes[3] << 24);
   }
 
-  private int intValue() {
-    return intValue;
+  private int wireValue() {
+    return wireValue;
   }
 }
