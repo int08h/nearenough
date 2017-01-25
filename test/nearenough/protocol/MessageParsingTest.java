@@ -5,6 +5,8 @@ import io.netty.buffer.Unpooled;
 import nearenough.exceptions.*;
 import org.junit.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.StringContains.containsString;
@@ -78,14 +80,29 @@ public class MessageParsingTest {
 
     String origValue = "Roughtime is a project that aims to provide secure time synchronization.";
 
-    ByteBuf buf = Unpooled.buffer();
-    buf.writeBytes(headerPart).writeBytes(origValue.getBytes());
+    ByteBuf buf = Unpooled.buffer()
+        .writeBytes(headerPart)
+        .writeBytes(origValue.getBytes(StandardCharsets.US_ASCII));
 
     RtMessage msg = new RtMessage(buf);
     byte[] retrievedVal = msg.get(RtTag.CERT);
 
     assertThat(retrievedVal.length, equalTo(origValue.length()));
     assertThat(new String(retrievedVal), equalTo(origValue));
+  }
+
+  @Test
+  public void zeroLengthBufferThrowsException() {
+    ByteBuf invalidZeroLenBuf = makeBuf();
+
+    try {
+      //noinspection unused
+      RtMessage unused = new RtMessage(invalidZeroLenBuf);
+      fail("expected an InvalidRoughTimeMessage exception");
+
+    } catch (MessageTooShortException e) {
+      assertThat(e.getMessage(), containsString("too short"));
+    }
   }
 
   @Test
@@ -179,7 +196,7 @@ public class MessageParsingTest {
   public void offsetPastEndOfMessageThrowsException() {
     ByteBuf invalidOffsetIsPastEndOfMessage = makeBuf(
         (byte) 0x02, (byte) 0x00, (byte) 0x00, (byte) 0x00, // 2 tags
-        (byte) 0x04, (byte) 0x03, (byte) 0x02, (byte) 0x01, // offset 0x1020304
+        (byte) 0x04, (byte) 0x03, (byte) 0x02, (byte) 0x01, // *invalid* offset 0x1020304
         (byte) 0x50, (byte) 0x50, (byte) 0x50, (byte) 0x50, // value 0x50505050
         (byte) 0x60, (byte) 0x60, (byte) 0x60, (byte) 0x60  // value 0x60606060
     );
@@ -213,6 +230,17 @@ public class MessageParsingTest {
 
     } catch (TagsNotIncreasingException e) {
       assertThat(e.getMessage(), containsString("not strictly increasing"));
+    }
+  }
+
+  @Test
+  public void invalidTagThrowsException() {
+    try {
+      RtTag.fromUnsignedInt(0xfeedface);
+      fail("expected an InvalidTagException");
+
+    } catch (InvalidTagException e) {
+      assertThat(e.getMessage(), containsString("0xfeedface"));
     }
   }
 
