@@ -5,7 +5,7 @@ import io.netty.buffer.ByteBufUtil;
 import nearenough.exceptions.*;
 
 import java.util.Collections;
-import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -66,7 +66,7 @@ public final class RtMessage {
   }
 
   private Map<RtTag, byte[]> extractSingleMapping(ByteBuf msg) {
-    long uintTag = msg.readUnsignedIntLE();
+    long uintTag = msg.readUnsignedInt();
     RtTag tag = RtTag.fromUnsignedInt((int) uintTag);
 
     byte[] value = new byte[msg.readableBytes()];
@@ -80,17 +80,20 @@ public final class RtMessage {
     int[] offsets = extractOffsets(msg);
 
     int startOfValues = msg.readerIndex() + (4 * numTags);
-    Map<RtTag, byte[]> mapping = new EnumMap<>(RtTag.class);
+    Map<RtTag, byte[]> mapping = new LinkedHashMap<>(numTags);
     RtTag prevTag = null;
+    long uintPrevTag = -1;
 
     for (int i = 0; i < offsets.length; i++) {
-      long uintCurrTag = msg.readUnsignedIntLE();
+      long uintCurrTag = msg.readUnsignedInt();
       RtTag currTag = RtTag.fromUnsignedInt((int) uintCurrTag);
 
-      if ((prevTag != null) && (currTag.ordinal() < prevTag.ordinal())) {
-        throw new TagsNotIncreasingException(
-            "tags not strictly increasing: prev " + prevTag + ", curr " + currTag
+      if ((prevTag != null) && (uintCurrTag < uintPrevTag)) {
+        String exMsg = String.format(
+            "tags not strictly increasing: current '%s' (0x%08x), previous '%s' (0x%08x)",
+            currTag, uintCurrTag, prevTag, uintPrevTag
         );
+        throw new TagsNotIncreasingException(exMsg);
       }
 
       int valueIdx = startOfValues + offsets[i];
@@ -101,6 +104,7 @@ public final class RtMessage {
 
       mapping.put(currTag, valueBytes);
       prevTag = currTag;
+      uintPrevTag = uintCurrTag;
     }
 
     return mapping;
