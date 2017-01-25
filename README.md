@@ -1,6 +1,11 @@
 # Nearenough
-A Netty-based implementation of the [Roughtime](https://roughtime.googlesource.com/roughtime) 
-secure time synchronization protocol.
+**Nearenough** is a Netty-based [Roughtime](https://roughtime.googlesource.com/roughtime) 
+secure time synchronization server.
+
+The [Roughtime](https://roughtime.googlesource.com/roughtime) protocol that aims to achieve rough 
+time synchronisation in a secure way that doesn't depend on any particular time server, and in such
+a way that, if a time server does misbehave, clients end up with cryptographic proof of it. It was 
+created by Adam Langley and Robert Obryk.
 
 ## Links
 * [Nearenough Github repo](https://github.com/int08h/nearenough)
@@ -12,7 +17,8 @@ Nearenough bundles all required dependencies in the `lib` directory. Add those `
 your IDE's project classpath. Building is IDE-only for the moment. 
 
 ## Implementation Status
-* **Server**
+Nearenough is in its infancy and very little is implemented. Expect significant changes as the code
+evolves.
 
   |Feature|State|
   |:-----:|:---:|
@@ -21,25 +27,13 @@ your IDE's project classpath. Building is IDE-only for the moment.
   | Nested (full Merkle tree) responses | Not started |
   | Long-term key management            | Not started |
   
-* **Client**
-  * Not started
-
-## About the Roughtime Protocol
-From the [Roughtime](https://roughtime.googlesource.com/roughtime) project page:
-
-  > Roughtime is a protocol that aims to achieve rough time synchronisation in a secure way 
-  > that doesn't depend on any particular time server, and in such a way that, if a time 
-  > server does misbehave, clients end up with cryptographic proof of it.
-  
-The protocol was created by Adam Langley and Robert Obryk at Google.
-
 ## Contributors
 * Stuart Stock, original author (stuart {at} int08h.com)
 
 ## Copyright and License
-Nearenough is Copyright (c) 2017 int08h, LLC. All rights reserved. 
+Nearenough is Copyright (c) 2017 int08h LLC. All rights reserved. 
 
-int08h, LLC licenses this file to you under the Apache License, version 2.0 (the "License"); you 
+int08h LLC licenses this file to you under the Apache License, version 2.0 (the "License"); you 
 may not use this file except in compliance with the License. You may obtain a copy of the License 
 from the [LICENSE](../master/LICENSE) file included with the software or at:
 
