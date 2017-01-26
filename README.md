@@ -2,7 +2,7 @@
 **Nearenough** is a Netty-based [Roughtime](https://roughtime.googlesource.com/roughtime) 
 secure time synchronization server.
 
-The [Roughtime](https://roughtime.googlesource.com/roughtime) protocol that aims to achieve rough 
+[Roughtime](https://roughtime.googlesource.com/roughtime) is a protocol that aims to achieve rough 
 time synchronisation in a secure way that doesn't depend on any particular time server, and in such
 a way that, if a time server does misbehave, clients end up with cryptographic proof of it. It was 
 created by Adam Langley and Robert Obryk.
