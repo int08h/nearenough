@@ -9,6 +9,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import nearenough.protocol.RtConstants;
 import nearenough.protocol.RtMessage;
 import nearenough.protocol.RtTag;
 
@@ -27,34 +28,40 @@ public final class ResponseDumper {
   private static final class RequestHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 
     private final InetSocketAddress addr;
-    private final MessageDigest sha512;
-    private final Random rand;
+    private final byte[] nonce;
+    private final byte[] expectedLeafHash;
 
     public RequestHandler(InetSocketAddress addr) {
+      Random rand = new Random();
+      MessageDigest sha512;
       try {
-        this.addr = addr;
-        this.rand = new Random();
-        this.sha512 = MessageDigest.getInstance("SHA-512");
+        sha512 = MessageDigest.getInstance("SHA-512");
       } catch (NoSuchAlgorithmException e) {
         throw new RuntimeException(e);
       }
+
+      this.addr = addr;
+      this.nonce = new byte[64];
+
+      rand.nextBytes(nonce);
+
+      sha512.update(RtConstants.TREE_LEAF_TWEAK);
+      sha512.update(nonce);
+      this.expectedLeafHash = sha512.digest();
+
+      System.out.println("NONC       = " + ByteBufUtil.hexDump(nonce));
+      System.out.println("LEAF(NONC) = " + ByteBufUtil.hexDump(expectedLeafHash));
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-      ByteBuf request = ctx.alloc().buffer(1024);
-      byte[] nonce = new byte[64];
-      rand.nextBytes(nonce);
-      sha512.update(nonce);
+      ByteBuf request = ctx.alloc().buffer(1024)
+          .writeIntLE(2) // num tags
+          .writeIntLE(64) // offset to start of PAD value
+          .writeInt(RtTag.NONC.wireEncoding()) // NONC tag
+          .writeInt(RtTag.PAD.wireEncoding())  // PAD tag
+          .writeBytes(nonce); // nonce value
 
-      System.out.println("NONC         = " + ByteBufUtil.hexDump(nonce));
-      System.out.println("SHA512(NONC) = " + ByteBufUtil.hexDump(sha512.digest()));
-
-      request.writeIntLE(2); // num tags
-      request.writeIntLE(64); // offset to start of PAD value
-      request.writeInt(RtTag.NONC.wireEncoding()); // NONC tag
-      request.writeInt(RtTag.PAD.wireEncoding());  // PAD tag
-      request.writeBytes(nonce); // nonce value
       while (request.writableBytes() > 0) {
         request.writeInt(0); // padding
       }
@@ -84,7 +91,6 @@ public final class ResponseDumper {
   }
 
   public static void main(String[] args) throws InterruptedException, NoSuchAlgorithmException {
-
     if (args.length != 2) {
       System.out.println("Usage: ResponseDumper SERVER PORT");
       System.exit(-1);
