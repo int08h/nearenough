@@ -1,12 +1,11 @@
 package nearenough.protocol;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import nearenough.exceptions.*;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * An immutable Roughtime protocol message.
@@ -16,6 +15,12 @@ import java.util.Map;
  * the specification and more details.
  */
 public final class RtMessage {
+
+  public static RtMessage fromBytes(byte[] bytes) {
+    ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(bytes.length);
+    buf.writeBytes(bytes);
+    return new RtMessage(buf);
+  }
 
   private final int numTags;
   private final Map<RtTag, byte[]> map;
@@ -39,6 +44,7 @@ public final class RtMessage {
       this.map = extractMultiMapping(msg);
     }
   }
+
 
   /**
    * @return Number of protocol tags in this message
@@ -85,8 +91,8 @@ public final class RtMessage {
     long uintPrevTag = -1;
 
     for (int i = 0; i < offsets.length; i++) {
-      long uintCurrTag = msg.readUnsignedInt();
-      RtTag currTag = RtTag.fromUnsignedInt((int) uintCurrTag);
+      long uintCurrTag = msg.readUnsignedIntLE();
+      RtTag currTag = RtTag.fromUnsignedInt(Integer.reverseBytes((int) uintCurrTag));
 
       if ((prevTag != null) && (uintCurrTag < uintPrevTag)) {
         String exMsg = String.format(
@@ -157,20 +163,30 @@ public final class RtMessage {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("RtMessage{\n");
-    sb.append(" tags : ").append(numTags).append('\n');
-    sb.append(" mapping : {\n");
+    return toString(1);
+  }
+
+  public String toString(int indentLevel) {
+    char[] indent1 = new char[2 * (indentLevel - 1)];
+    char[] indent2 = new char[2 * indentLevel];
+    Arrays.fill(indent1, ' ');
+    Arrays.fill(indent2, ' ');
+
+    StringBuilder sb = new StringBuilder("RtMessage|").append(numTags).append("|{\n");
+
     if (map != null) {
       map.forEach(
           (tag, value) -> {
-            sb.append("    ").append(tag.name()).append(" = ");
-            sb.append(ByteBufUtil.hexDump(value));
-            sb.append('\n');
+            sb.append(indent2).append(tag.name()).append("(").append(value.length).append(") = ");
+            if (tag.isNested()) {
+              sb.append(fromBytes(value).toString(indentLevel + 1));
+            } else {
+              sb.append(ByteBufUtil.hexDump(value)).append('\n');
+            }
           }
       );
     }
-    sb.append(" }\n");
-    sb.append("}");
+    sb.append(indent1).append("}\n");
     return sb.toString();
   }
 }

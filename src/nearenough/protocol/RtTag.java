@@ -4,6 +4,9 @@ import io.netty.util.collection.IntObjectHashMap;
 import io.netty.util.collection.IntObjectMap;
 import nearenough.exceptions.InvalidTagException;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * Roughtime protocol Tags.
  */
@@ -24,26 +27,29 @@ public enum RtTag {
   SIG('S', 'I', 'G', 0x00),
   SREP('S', 'R', 'E', 'P');
 
-  // Primitive collection is used to eliminate boxing from the hot-path of fromUnsignedInt
-  private static final IntObjectMap<RtTag> wireToTag = new IntObjectHashMap<>(values().length);
+  // Primitive collection is used to eliminate boxing in the hot-path of fromUnsignedInt
+  private static final IntObjectMap<RtTag> ENCODING_TO_TAG = new IntObjectHashMap<>(values().length);
+
+  // Tags for which values are nested messages
+  private static final Set<RtTag> NESTED_TAGS = EnumSet.of(CERT, DELE, SREP);
 
   static {
     for (RtTag rtTag : values()) {
-      wireToTag.put(rtTag.wireValue(), rtTag);
+      ENCODING_TO_TAG.put(rtTag.wireEncoding(), rtTag);
     }
   }
 
   /**
-   * Return the {@link RtTag} that corresponds to the provided <em>little-endian</em> uint32 value,
-   * or throws {@link InvalidTagException} if no mapping exists.
+   * Return the {@link RtTag} that corresponds to the provided uint32 value, or throws
+   * {@link InvalidTagException} if no mapping exists.
    *
-   * @param tagValue little-endian unsigned 32-bit tag
+   * @param tagValue unsigned 32-bit tag
    *
    * @return the {@link RtTag} that corresponds to the value, or throws {@link InvalidTagException}
    * if no mapping exists.
    */
   public static RtTag fromUnsignedInt(int tagValue) throws InvalidTagException {
-    RtTag tag = wireToTag.get(tagValue);
+    RtTag tag = ENCODING_TO_TAG.get(tagValue);
 
     if (tag != null) {
       return tag;
@@ -60,14 +66,17 @@ public enum RtTag {
     }
   }
 
-  private final int wireValue;
+  private final int wireEncoding;
 
   RtTag(int... bytes) {
-    // Per the spec, Roughtime tag values are little-endian on-the-wire
-    this.wireValue = (bytes[0] | bytes[1] << 8 | bytes[2] << 16 | bytes[3] << 24);
+    this.wireEncoding = (bytes[3] | bytes[2] << 8 | bytes[1] << 16 | bytes[0] << 24);
   }
 
-  private int wireValue() {
-    return wireValue;
+  public int wireEncoding() {
+    return wireEncoding;
+  }
+
+  public boolean isNested() {
+    return NESTED_TAGS.contains(this);
   }
 }

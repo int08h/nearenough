@@ -32,7 +32,7 @@ public class MessageParsingTest {
     ByteBuf validSingleTag = makeBuf(
         (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, // 1 tag
                                                             // no offsets
-        (byte) 'T',  (byte) 'R',  (byte) 'E',  (byte) 'C',  // CERT tag
+        (byte) 'C',  (byte) 'E',  (byte) 'R',  (byte) 'T',  // CERT tag
         (byte) 0x50, (byte) 0x50, (byte) 0x50, (byte) 0x50  // value 0x50505050
     );
 
@@ -49,9 +49,9 @@ public class MessageParsingTest {
         (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x00,  // 3 tags
         (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00,  // tag #2 has offset 4
         (byte) 0x08, (byte) 0x00, (byte) 0x00, (byte) 0x00,  // tag #3 has offset 8
-        (byte) 'E',  (byte) 'L',  (byte) 'E',  (byte) 'D',   // DELE
-        (byte) 'X',  (byte) 'D',  (byte) 'N',  (byte) 'I',   // INDX
-        (byte) 0xff, (byte) 'D',  (byte) 'A',  (byte) 'P',   // PAD
+        (byte) 'D',  (byte) 'E',  (byte) 'L',  (byte) 'E',   // DELE
+        (byte) 'I',  (byte) 'N',  (byte) 'D',  (byte) 'X',   // INDX
+        (byte) 'P',  (byte) 'A',  (byte) 'D',  (byte) 0xff,  // PAD
         (byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x11,  // data for DELE
         (byte) 0x22, (byte) 0x22, (byte) 0x22, (byte) 0x22,  // data for INDX
         (byte) 0x33, (byte) 0x33, (byte) 0x33, (byte) 0x33   // data for PAD
@@ -75,7 +75,7 @@ public class MessageParsingTest {
     byte[] headerPart = new byte[]{
         (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, // 1 tag
                                                             // no offsets
-        (byte) 'T',  (byte) 'R',  (byte) 'E',  (byte) 'C'   // CERT
+        (byte) 'C',  (byte) 'E',  (byte) 'R',  (byte) 'T'   // CERT
     };
 
     String origValue = "Roughtime is a project that aims to provide secure time synchronization.";
@@ -217,8 +217,8 @@ public class MessageParsingTest {
     ByteBuf invalidTagsNotIncreasing = makeBuf(
         (byte) 0x02, (byte) 0x00, (byte) 0x00, (byte) 0x00,  // 2 tags
         (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00,  // tag #2 has offset 4
-        (byte) 'X',  (byte) 'D',  (byte) 'N',  (byte) 'I',   // INDX
-        (byte) 'E',  (byte) 'L',  (byte) 'E',  (byte) 'D',   // DELE *decreased*
+        (byte) 'I',  (byte) 'N',  (byte) 'D',  (byte) 'X',   // INDX
+        (byte) 'D',  (byte) 'E',  (byte) 'L',  (byte) 'E',   // DELE *decreased*
         (byte) 0x50, (byte) 0x50, (byte) 0x50, (byte) 0x50,  // value 0x50505050
         (byte) 0x60, (byte) 0x60, (byte) 0x60, (byte) 0x60   // value 0x60606060
     );
