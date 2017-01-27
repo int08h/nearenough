@@ -2,6 +2,7 @@ package nearenough.util;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,6 +11,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import nearenough.protocol.RtConstants;
+import nearenough.protocol.RtEncoding;
 import nearenough.protocol.RtMessage;
 import nearenough.protocol.RtTag;
 
@@ -55,18 +57,14 @@ public final class ResponseDumper {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-      ByteBuf request = ctx.alloc().buffer(1024)
-          .writeIntLE(2) // num tags
-          .writeIntLE(64) // offset to start of PAD value
-          .writeInt(RtTag.NONC.wireEncoding()) // NONC tag
-          .writeInt(RtTag.PAD.wireEncoding())  // PAD tag
-          .writeBytes(nonce); // nonce value
+      RtMessage msg = RtMessage.builder()
+          .addPadding(true)
+          .add(RtTag.NONC, nonce)
+          .build();
 
-      while (request.writableBytes() > 0) {
-        request.writeInt(0); // padding
-      }
+      ByteBuf buf = RtEncoding.toWire(msg, ByteBufAllocator.DEFAULT);
 
-      ctx.writeAndFlush(new DatagramPacket(request, addr))
+      ctx.writeAndFlush(new DatagramPacket(buf, addr))
           .addListener(fut -> {
             if (!fut.isSuccess()) {
               System.out.println("Send failed " + fut.cause().getMessage());

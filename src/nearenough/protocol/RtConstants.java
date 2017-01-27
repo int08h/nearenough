@@ -5,17 +5,17 @@ package nearenough.protocol;
  */
 public final class RtConstants {
 
-  /** Minimum size of a client request */
-  public static final int MIN_REQUEST_LENGTH_BYTES = 1024;
+  /** Minimum size (in bytes) of a client request */
+  public static final int MIN_REQUEST_LENGTH = 1024;
 
-  /** Size of the client's nonce */
-  public static final int NONCE_LENGTH_BYTES = 64;
+  /** Size (in bytes) of the client's nonce */
+  public static final int NONCE_LENGTH = 64;
 
-  /** Size of server's timestamp value */
-  public static final int TIMESTAMP_LENGTH_BYTES = 8;
+  /** Size (in bytes) of server's timestamp value */
+  public static final int TIMESTAMP_LENGTH = 8;
 
-  /** Size of server's time uncertainty value */
-  public static final int RADIUS_LENGTH_BYTES = 4;
+  /** Size (in bytes) of server's time uncertainty value */
+  public static final int RADIUS_LENGTH = 4;
 
   /** Prefixed to the server's certificate before generating or verifying certificate's signature */
   public static final String CERTIFICATE_CONTEXT = "RoughTime v1 delegation signature--\\x00";

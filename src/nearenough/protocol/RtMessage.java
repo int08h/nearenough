@@ -5,7 +5,10 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import nearenough.exceptions.*;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * An immutable Roughtime protocol message.
@@ -15,6 +18,10 @@ import java.util.*;
  * the specification and more details.
  */
 public final class RtMessage {
+
+  public static RtMessageBuilder builder() {
+    return new RtMessageBuilder();
+  }
 
   /**
    * @return A new {@code RtMessage} by parsing the contents of the provided {@code byte[]}. The
@@ -49,10 +56,10 @@ public final class RtMessage {
     }
   }
 
-//  RtMessage(RtMessageBuilder builder) {
-//    this.numTags = builder.mapping().size();
-//    this.map = new LinkedHashMap<>(builder.mapping());
-//  }
+  RtMessage(RtMessageBuilder builder) {
+    this.map = builder.mapping();
+    this.numTags = map.size();
+  }
 
   /**
    * @return Number of protocol tags in this message
@@ -66,6 +73,13 @@ public final class RtMessage {
    */
   public byte[] get(RtTag tag) {
     return map.get(tag);
+  }
+
+  /**
+   * @return A read-only view of the message's mapping.
+   */
+  public Map<RtTag, byte[]> mapping() {
+    return Collections.unmodifiableMap(map);
   }
 
   private int extractNumTags(ByteBuf msg) {
