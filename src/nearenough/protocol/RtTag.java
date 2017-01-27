@@ -27,7 +27,7 @@ public enum RtTag {
   SIG('S', 'I', 'G', 0x00),
   SREP('S', 'R', 'E', 'P');
 
-  // Primitive collection is used to eliminate boxing in the hot-path of fromUnsignedInt
+  // Primitive collection eliminates boxing in fromUnsignedInt which is a hot method
   private static final IntObjectMap<RtTag> ENCODING_TO_TAG = new IntObjectHashMap<>(values().length);
 
   // Tags for which values are nested messages
@@ -67,13 +67,26 @@ public enum RtTag {
   }
 
   private final int wireEncoding;
+  private final int valueLE;
 
   RtTag(int... bytes) {
     this.wireEncoding = (bytes[3] | bytes[2] << 8 | bytes[1] << 16 | bytes[0] << 24);
+    this.valueLE = Integer.reverseBytes(wireEncoding);
   }
 
   public int wireEncoding() {
     return wireEncoding;
+  }
+
+  public int valueLE() {
+    return valueLE;
+  }
+
+  public boolean isLessThan(RtTag other) {
+    // Enforcement of the "tags in strictly increasing order" rule is done using the
+    // little-endian encoding of the ASCII tag value; e.g. 'SIG\x00' is 0x00474953 and
+    // 'NONC' is 0x434e4f4e
+    return Integer.compareUnsigned(valueLE, other.valueLE) < 0;
   }
 
   public boolean isNested() {

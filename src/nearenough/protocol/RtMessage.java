@@ -16,6 +16,10 @@ import java.util.*;
  */
 public final class RtMessage {
 
+  /**
+   * @return A new {@code RtMessage} by parsing the contents of the provided {@code byte[]}. The
+   * contents of {@code bytes} must be a well-formed Roughtime message.
+   */
   public static RtMessage fromBytes(byte[] bytes) {
     ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(bytes.length);
     buf.writeBytes(bytes);
@@ -45,6 +49,10 @@ public final class RtMessage {
     }
   }
 
+//  RtMessage(RtMessageBuilder builder) {
+//    this.numTags = builder.mapping().size();
+//    this.map = new LinkedHashMap<>(builder.mapping());
+//  }
 
   /**
    * @return Number of protocol tags in this message
@@ -88,16 +96,15 @@ public final class RtMessage {
     int startOfValues = msg.readerIndex() + (4 * numTags);
     Map<RtTag, byte[]> mapping = new LinkedHashMap<>(numTags);
     RtTag prevTag = null;
-    long uintPrevTag = -1;
 
     for (int i = 0; i < offsets.length; i++) {
-      long uintCurrTag = msg.readUnsignedIntLE();
-      RtTag currTag = RtTag.fromUnsignedInt(Integer.reverseBytes((int) uintCurrTag));
+      long uintCurrTag = msg.readUnsignedInt();
+      RtTag currTag = RtTag.fromUnsignedInt((int) uintCurrTag);
 
-      if ((prevTag != null) && (uintCurrTag < uintPrevTag)) {
+      if ((prevTag != null) && currTag.isLessThan(prevTag)) {
         String exMsg = String.format(
             "tags not strictly increasing: current '%s' (0x%08x), previous '%s' (0x%08x)",
-            currTag, uintCurrTag, prevTag, uintPrevTag
+            currTag, currTag.valueLE(), prevTag, prevTag.valueLE()
         );
         throw new TagsNotIncreasingException(exMsg);
       }
@@ -110,7 +117,6 @@ public final class RtMessage {
 
       mapping.put(currTag, valueBytes);
       prevTag = currTag;
-      uintPrevTag = uintCurrTag;
     }
 
     return mapping;
