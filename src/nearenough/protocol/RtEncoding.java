@@ -12,7 +12,16 @@ import java.util.Map;
 public final class RtEncoding {
 
   /**
-   * Encode the given message using the provided allocator.
+   * Encode the given message using the system default ByteBuf allocator.
+   *
+   * @return A {@link ByteBuf} containing this message encoded for transmission.
+   */
+  public static ByteBuf toWire(RtMessage msg) {
+    return toWire(msg, ByteBufAllocator.DEFAULT);
+  }
+
+  /**
+   * Encode the given message using the provided ByteBuf allocator.
    *
    * @return A {@link ByteBuf} containing this message encoded for transmission.
    */

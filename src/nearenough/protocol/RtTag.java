@@ -54,6 +54,7 @@ public enum RtTag {
     if (tag != null) {
       return tag;
     } else {
+      //noinspection NumericCastThatLosesPrecision
       String exMsg = String.format(
           "'%c%c%c%c' (0x%08x)",
           (char) (tagValue >> 24 & 0xff),

@@ -2,7 +2,6 @@ package nearenough.util;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,15 +9,14 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import nearenough.protocol.RtConstants;
-import nearenough.protocol.RtEncoding;
-import nearenough.protocol.RtMessage;
-import nearenough.protocol.RtTag;
 
 import java.net.InetSocketAddress;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+import nearenough.protocol.RtEncoding;
+import nearenough.protocol.RtHashing;
+import nearenough.protocol.RtMessage;
+import nearenough.protocol.RtTag;
 
 /**
  * Send a one-off request to the given Roughtime server and dump the response (if any)
@@ -35,21 +33,12 @@ public final class ResponseDumper {
 
     public RequestHandler(InetSocketAddress addr) {
       Random rand = new Random();
-      MessageDigest sha512;
-      try {
-        sha512 = MessageDigest.getInstance("SHA-512");
-      } catch (NoSuchAlgorithmException e) {
-        throw new RuntimeException(e);
-      }
+      RtHashing hasher = new RtHashing();
 
       this.addr = addr;
       this.nonce = new byte[64];
-
       rand.nextBytes(nonce);
-
-      sha512.update(RtConstants.TREE_LEAF_TWEAK);
-      sha512.update(nonce);
-      this.expectedLeafHash = sha512.digest();
+      this.expectedLeafHash = hasher.hashLeaf(nonce);
 
       System.out.println("NONC       = " + ByteBufUtil.hexDump(nonce));
       System.out.println("LEAF(NONC) = " + ByteBufUtil.hexDump(expectedLeafHash));
@@ -62,7 +51,7 @@ public final class ResponseDumper {
           .add(RtTag.NONC, nonce)
           .build();
 
-      ByteBuf buf = RtEncoding.toWire(msg, ByteBufAllocator.DEFAULT);
+      ByteBuf buf = RtEncoding.toWire(msg);
 
       ctx.writeAndFlush(new DatagramPacket(buf, addr))
           .addListener(fut -> {
@@ -74,7 +63,9 @@ public final class ResponseDumper {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
-      System.out.printf("Read message (%s):\n", msg.sender());
+      System.out.printf(
+          "Read message of %d bytes from %s:\n", msg.content().readableBytes(), msg.sender()
+      );
       System.out.println(ByteBufUtil.prettyHexDump(msg.content()));
       RtMessage response = new RtMessage(msg.content());
       System.out.println(response);
