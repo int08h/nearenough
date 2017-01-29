@@ -2,10 +2,10 @@ package nearenough.protocol;
 
 import io.netty.util.collection.IntObjectHashMap;
 import io.netty.util.collection.IntObjectMap;
-import nearenough.exceptions.InvalidTagException;
 
 import java.util.EnumSet;
 import java.util.Set;
+import nearenough.exceptions.InvalidTagException;
 
 /**
  * Roughtime protocol Tags.

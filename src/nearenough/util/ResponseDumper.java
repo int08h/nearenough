@@ -1,5 +1,7 @@
 package nearenough.util;
 
+import static net.i2p.crypto.eddsa.Utils.hexToBytes;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -11,8 +13,12 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 
 import java.net.InetSocketAddress;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.util.Random;
+import nearenough.protocol.RtConstants;
+import nearenough.protocol.RtEd25519;
 import nearenough.protocol.RtEncoding;
 import nearenough.protocol.RtHashing;
 import nearenough.protocol.RtMessage;
@@ -25,6 +31,10 @@ import nearenough.protocol.RtTag;
  */
 public final class ResponseDumper {
 
+  private static final byte[] GOOGLE_PUBKEY = hexToBytes(
+      "7ad3da688c5c04c635a14786a70bcf30224cc25455371bf9d4a2bfb64b682534"
+  );
+
   private static final class RequestHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 
     private final InetSocketAddress addr;
@@ -36,7 +46,7 @@ public final class ResponseDumper {
       RtHashing hasher = new RtHashing();
 
       this.addr = addr;
-      this.nonce = new byte[64];
+      this.nonce = new byte[RtConstants.NONCE_LENGTH];
       rand.nextBytes(nonce);
       this.expectedLeafHash = hasher.hashLeaf(nonce);
 
@@ -69,13 +79,43 @@ public final class ResponseDumper {
       System.out.println(ByteBufUtil.prettyHexDump(msg.content()));
       RtMessage response = new RtMessage(msg.content());
       System.out.println(response);
+
+      verifyCertSignature(response);
+      verifySrepSignature(response);
+
       ctx.close();
+    }
+
+    private void verifySrepSignature(RtMessage response) throws InvalidKeyException, SignatureException {
+      RtMessage certMsg = RtMessage.fromBytes(response.get(RtTag.CERT));
+      RtMessage deleMsg = RtMessage.fromBytes(certMsg.get(RtTag.DELE));
+
+      byte[] pubKey = deleMsg.get(RtTag.PUBK);
+      RtEd25519.Verifier verifier = new RtEd25519.Verifier(pubKey);
+      verifier.update(RtConstants.SIGNED_RESPONSE_CONTEXT.getBytes());
+      verifier.update(response.get(RtTag.SREP));
+
+      System.out.println("SREP signature is " + verifier.verify(response.get(RtTag.SIG)));
+    }
+
+    private void verifyCertSignature(RtMessage response) throws InvalidKeyException, SignatureException {
+      RtEd25519.Verifier verifier = new RtEd25519.Verifier(GOOGLE_PUBKEY);
+      RtMessage certMsg = RtMessage.fromBytes(response.get(RtTag.CERT));
+
+      verifier.update(RtConstants.CERTIFICATE_CONTEXT.getBytes());
+      verifier.update(certMsg.get(RtTag.DELE));
+
+      byte[] certSig = certMsg.get(RtTag.SIG);
+      assert certSig.length == 64 : "bad length";
+
+      System.out.println("CERT signature is " + verifier.verify(certSig));
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
       System.out.println("Exception caught: " + cause.getMessage());
       ctx.close();
+      throw new RuntimeException(cause);
     }
   }
 

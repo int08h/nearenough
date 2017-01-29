@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 public final class RtHashing {
 
   /**
-   * @return A new SHA-512 instance
+   * @return A new SHA-512 instance, re-throwing any checked exception as un-checked
    */
   public static MessageDigest newSha512() {
     try {
