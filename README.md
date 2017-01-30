@@ -1,6 +1,6 @@
 # Nearenough
-**Nearenough** is a Netty-based [Roughtime](https://roughtime.googlesource.com/roughtime) 
-secure time synchronization server.
+**Nearenough** is a Netty-based implementation of the 
+[Roughtime](https://roughtime.googlesource.com/roughtime) secure time synchronization protocol.
 
 [Roughtime](https://roughtime.googlesource.com/roughtime) is a protocol that aims to achieve rough 
 time synchronisation in a secure way that doesn't depend on any particular time server, and in such
