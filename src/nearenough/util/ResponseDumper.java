@@ -1,7 +1,5 @@
 package nearenough.util;
 
-import static net.i2p.crypto.eddsa.Utils.hexToBytes;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -11,18 +9,15 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import nearenough.protocol.*;
 
 import java.net.InetSocketAddress;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.Random;
-import nearenough.protocol.RtConstants;
-import nearenough.protocol.RtEd25519;
-import nearenough.protocol.RtEncoding;
-import nearenough.protocol.RtHashing;
-import nearenough.protocol.RtMessage;
-import nearenough.protocol.RtTag;
+
+import static net.i2p.crypto.eddsa.Utils.hexToBytes;
 
 /**
  * Send a one-off request to the given Roughtime server and dump the response (if any)
@@ -92,8 +87,10 @@ public final class ResponseDumper {
 
       byte[] pubKey = deleMsg.get(RtTag.PUBK);
       RtEd25519.Verifier verifier = new RtEd25519.Verifier(pubKey);
-      verifier.update(RtConstants.SIGNED_RESPONSE_CONTEXT.getBytes());
-      verifier.update(response.get(RtTag.SREP));
+
+      byte[] srepContent = response.get(RtTag.SREP);
+      verifier.update(RtConstants.SIGNED_RESPONSE_CONTEXT);
+      verifier.update(srepContent);
 
       System.out.println("SREP signature is " + verifier.verify(response.get(RtTag.SIG)));
     }
@@ -102,7 +99,7 @@ public final class ResponseDumper {
       RtEd25519.Verifier verifier = new RtEd25519.Verifier(GOOGLE_PUBKEY);
       RtMessage certMsg = RtMessage.fromBytes(response.get(RtTag.CERT));
 
-      verifier.update(RtConstants.CERTIFICATE_CONTEXT.getBytes());
+      verifier.update(RtConstants.CERTIFICATE_CONTEXT);
       verifier.update(certMsg.get(RtTag.DELE));
 
       byte[] certSig = certMsg.get(RtTag.SIG);
