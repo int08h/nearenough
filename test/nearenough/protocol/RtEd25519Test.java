@@ -6,7 +6,7 @@ import static net.i2p.crypto.eddsa.Utils.hexToBytes;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 
-public final class Ed25519Test {
+public final class RtEd25519Test {
 
   @Test
   public void verifyEmptyMessageSignature() throws Exception {

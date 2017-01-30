@@ -6,6 +6,9 @@ import io.netty.buffer.ByteBufAllocator;
 import java.util.Iterator;
 import java.util.Map;
 
+import static nearenough.util.Preconditions.checkNotNull;
+import static nearenough.util.Preconditions.checkState;
+
 /**
  * Encodes {@link RtMessage Roughtime messages} to their canonical on-the-wire format.
  */
@@ -26,15 +29,20 @@ public final class RtEncoding {
    * @return A {@link ByteBuf} containing this message encoded for transmission.
    */
   public static ByteBuf toWire(RtMessage msg, ByteBufAllocator allocator) {
+    checkNotNull(msg, "msg");
+    checkNotNull(allocator, "allocator");
+
     int encodedSize = computeEncodedSize(msg.mapping());
     ByteBuf buf = allocator.buffer(encodedSize);
+    checkState(buf.writableBytes() >= 4, "nonsensical output buf size %s", buf.writableBytes());
 
     writeNumTags(msg, buf);
     writeOffsets(msg, buf);
     writeTags(msg, buf);
     writeValues(msg, buf);
 
-    assert buf.writableBytes() == 0 : "message was not completely written";
+    // Output buffer should have been completely used
+    checkState(buf.writableBytes() == 0, "message was not completely written");
 
     return buf;
   }
@@ -42,7 +50,7 @@ public final class RtEncoding {
   /*package*/ static int computeEncodedSize(Map<RtTag, byte[]> map) {
     int numTagsSum = 4;
     int tagsSum = 4 * map.size();
-    int offsetsSum = 4 * (map.size() - 1);
+    int offsetsSum = map.size() < 2 ? 0 : (4 * (map.size() - 1));
     int valuesSum = map.values().stream().mapToInt(value -> value.length).sum();
 
     return numTagsSum + tagsSum + offsetsSum + valuesSum;

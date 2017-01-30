@@ -2,10 +2,12 @@ package nearenough.protocol;
 
 import io.netty.util.collection.IntObjectHashMap;
 import io.netty.util.collection.IntObjectMap;
+import nearenough.exceptions.InvalidTagException;
 
 import java.util.EnumSet;
 import java.util.Set;
-import nearenough.exceptions.InvalidTagException;
+
+import static nearenough.util.Preconditions.checkNotNull;
 
 /**
  * Roughtime protocol Tags.
@@ -84,6 +86,7 @@ public enum RtTag {
   }
 
   public boolean isLessThan(RtTag other) {
+    checkNotNull(other, "cannot compare to null RtTag");
     // Enforcement of the "tags in strictly increasing order" rule is done using the
     // little-endian encoding of the ASCII tag value; e.g. 'SIG\x00' is 0x00474953 and
     // 'NONC' is 0x434e4f4e

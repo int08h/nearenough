@@ -3,6 +3,8 @@ package nearenough.protocol;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import static nearenough.util.Preconditions.checkNotNull;
+
 public final class RtHashing {
 
   /**
@@ -23,6 +25,8 @@ public final class RtHashing {
   }
 
   public byte[] hashLeaf(byte[] leaf) {
+    checkNotNull(leaf, "leaf");
+
     sha512.reset();
     sha512.update(RtConstants.TREE_LEAF_TWEAK);
     sha512.update(leaf);
@@ -30,6 +34,9 @@ public final class RtHashing {
   }
 
   public byte[] hashNode(byte[] left, byte[] right) {
+    checkNotNull(left, "left");
+    checkNotNull(right, "right");
+
     sha512.reset();
     sha512.update(RtConstants.TREE_NODE_TWEAK);
     sha512.update(left);

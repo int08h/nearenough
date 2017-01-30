@@ -3,17 +3,14 @@ package nearenough.protocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
+import nearenough.exceptions.*;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import nearenough.exceptions.InvalidNumTagsException;
-import nearenough.exceptions.MessageTooShortException;
-import nearenough.exceptions.MessageUnalignedException;
-import nearenough.exceptions.TagOffsetOverflowException;
-import nearenough.exceptions.TagOffsetUnalignedException;
-import nearenough.exceptions.TagsNotIncreasingException;
+
+import static nearenough.util.Preconditions.checkNotNull;
 
 /**
  * An immutable Roughtime protocol message.
@@ -33,6 +30,8 @@ public final class RtMessage {
    * contents of {@code bytes} must be a well-formed Roughtime message.
    */
   public static RtMessage fromBytes(byte[] bytes) {
+    checkNotNull(bytes, "bytes");
+
     ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(bytes.length);
     buf.writeBytes(bytes);
     return new RtMessage(buf);
@@ -46,6 +45,7 @@ public final class RtMessage {
    * contents of {@code msg} must be a well-formed Roughtime message.
    */
   public RtMessage(ByteBuf msg) {
+    checkNotNull(msg, "msg");
     checkMessageLength(msg);
 
     this.numTags = extractNumTags(msg);

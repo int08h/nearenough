@@ -1,8 +1,5 @@
 package nearenough.protocol;
 
-import static java.util.Objects.requireNonNull;
-import static nearenough.protocol.RtConstants.MIN_REQUEST_LENGTH;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
@@ -10,6 +7,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
+
+import static nearenough.protocol.RtConstants.MIN_REQUEST_LENGTH;
+import static nearenough.util.Preconditions.checkArgument;
+import static nearenough.util.Preconditions.checkNotNull;
 
 public final class RtMessageBuilder {
 
@@ -19,16 +20,15 @@ public final class RtMessageBuilder {
   private boolean shouldAddPadding = false;
 
   public RtMessageBuilder add(RtTag tag, byte[] value) {
-    requireNonNull(tag, "tag must be non-null");
-    requireNonNull(value, "value must be non-null");
+    checkNotNull(tag, "tag must be non-null");
 
     map.put(tag, value);
     return this;
   }
 
   public RtMessageBuilder add(RtTag tag, ByteBuf value) {
-    requireNonNull(tag, "tag must be non-null");
-    requireNonNull(value, "value must be non-null");
+    checkNotNull(tag, "tag must be non-null");
+    checkNotNull(value, "value must be non-null");
 
     byte[] bytes = new byte[value.readableBytes()];
     value.readBytes(bytes);
@@ -38,8 +38,8 @@ public final class RtMessageBuilder {
   }
 
   public RtMessageBuilder add(RtTag tag, RtMessage msg) {
-    requireNonNull(tag, "tag must be non-null");
-    requireNonNull(msg, "msg must be non-null");
+    checkNotNull(tag, "tag must be non-null");
+    checkNotNull(msg, "msg must be non-null");
 
     ByteBuf encoded = RtEncoding.toWire(msg, allocator);
     return add(tag, encoded);
@@ -51,16 +51,14 @@ public final class RtMessageBuilder {
   }
 
   public RtMessageBuilder allocator(ByteBufAllocator allocator) {
-    requireNonNull(allocator, "allocator must be non-null");
+    checkNotNull(allocator, "allocator must be non-null");
 
     this.allocator = allocator;
     return this;
   }
 
   public RtMessage build() {
-    if (map.isEmpty()) {
-      throw new IllegalArgumentException("Cannot build an empty RtMessage");
-    }
+    checkArgument(!map.isEmpty(), "Cannot build an empty RtMessage");
 
     int encodedSize = RtEncoding.computeEncodedSize(map);
 
