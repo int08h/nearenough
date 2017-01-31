@@ -93,7 +93,7 @@ public final class RtEd25519 {
      * @param publicKeyBytes A byte[32] containing the Ed25519 public key to use for verifications.
      */
     public Verifier(byte[] publicKeyBytes) throws InvalidKeyException, SignatureException {
-      checkArgument(publicKeyBytes.length == PUBKEY_LENGTH, "public key incorrect size");
+      checkArgument(publicKeyBytes.length == PUBKEY_LENGTH, "incorrect public key size");
 
       EdDSAPublicKeySpec publicSpec = new EdDSAPublicKeySpec(publicKeyBytes, ED25519_SPEC);
       PublicKey publicKey = new EdDSAPublicKey(publicSpec);

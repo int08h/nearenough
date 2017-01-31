@@ -2,20 +2,40 @@ package nearenough.protocol;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
+import nearenough.util.BytesUtil;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Iterator;
 import java.util.Map;
 
-import static nearenough.util.Preconditions.checkNotNull;
-import static nearenough.util.Preconditions.checkState;
+import static nearenough.protocol.RtConstants.TIMESTAMP_LENGTH;
+import static nearenough.util.Preconditions.*;
 
 /**
- * Encodes {@link RtMessage Roughtime messages} to their canonical on-the-wire format.
+ * Encodes/decodes {@link RtMessage Roughtime messages} and fields to/from their on-the-wire format.
  */
-public final class RtEncoding {
+public final class RtWire {
 
   /**
-   * Encode the given message using the system default ByteBuf allocator.
+   * Convert the on-the-wire UTC midpoint value to a {@link ZonedDateTime} in the system default
+   * time zone.
+   *
+   * @param midpBytes The MIDP value
+   *
+   * @return A {@link ZonedDateTime} that corresponds to the UTC time from the provided MIDP.
+   */
+  public static ZonedDateTime timeFromMidpoint(byte[] midpBytes) {
+    checkArgument(midpBytes.length == TIMESTAMP_LENGTH, "invalid MIDP length %s", midpBytes.length);
+
+    long midp = BytesUtil.getLongLE(midpBytes, 0);
+    Instant midpInst = Instant.ofEpochMilli(midp / 1000);
+    return ZonedDateTime.ofInstant(midpInst, ZoneId.systemDefault());
+  }
+
+  /**
+   * Encode the given message for network transmission using the system default ByteBuf allocator.
    *
    * @return A {@link ByteBuf} containing this message encoded for transmission.
    */
@@ -24,7 +44,7 @@ public final class RtEncoding {
   }
 
   /**
-   * Encode the given message using the provided ByteBuf allocator.
+   * Encode the given message for network transmission using the provided ByteBuf allocator.
    *
    * @return A {@link ByteBuf} containing this message encoded for transmission.
    */
@@ -47,6 +67,9 @@ public final class RtEncoding {
     return buf;
   }
 
+  /**
+   * @return The size in bytes of the on-the-wire encoding of the provided {@code map}.
+   */
   /*package*/ static int computeEncodedSize(Map<RtTag, byte[]> map) {
     int numTagsSum = 4;
     int tagsSum = 4 * map.size();

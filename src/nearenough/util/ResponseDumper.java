@@ -15,8 +15,11 @@ import java.net.InetSocketAddress;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.time.ZonedDateTime;
 import java.util.Random;
 
+import static nearenough.protocol.RtConstants.TIMESTAMP_LENGTH;
+import static nearenough.util.Preconditions.checkState;
 import static net.i2p.crypto.eddsa.Utils.hexToBytes;
 
 /**
@@ -56,7 +59,7 @@ public final class ResponseDumper {
           .add(RtTag.NONC, nonce)
           .build();
 
-      ByteBuf buf = RtEncoding.toWire(msg);
+      ByteBuf buf = RtWire.toWire(msg);
 
       ctx.writeAndFlush(new DatagramPacket(buf, addr))
           .addListener(fut -> {
@@ -78,7 +81,19 @@ public final class ResponseDumper {
       verifyCertSignature(response);
       verifySrepSignature(response);
 
+      printTime(response);
+
       ctx.close();
+    }
+
+    private void printTime(RtMessage response) {
+      ZonedDateTime now = ZonedDateTime.now();
+      RtMessage srepMsg = RtMessage.fromBytes(response.get(RtTag.SREP));
+      byte[] midpBytes = srepMsg.get(RtTag.MIDP);
+      checkState(midpBytes.length == TIMESTAMP_LENGTH);
+
+      System.out.println("Midp : " + RtWire.timeFromMidpoint(midpBytes));
+      System.out.println("Now  : " + now);
     }
 
     private void verifySrepSignature(RtMessage response) throws InvalidKeyException, SignatureException {
@@ -103,7 +118,7 @@ public final class ResponseDumper {
       verifier.update(certMsg.get(RtTag.DELE));
 
       byte[] certSig = certMsg.get(RtTag.SIG);
-      assert certSig.length == 64 : "bad length";
+      checkState(certSig.length == 64, "invalid signature length %s", certSig.length);
 
       System.out.println("CERT signature is " + verifier.verify(certSig));
     }

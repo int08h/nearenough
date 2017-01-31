@@ -1,5 +1,5 @@
 # Nearenough
-**Nearenough** is a Netty-based implementation of the 
+**Nearenough** is a Java implementation of the 
 [Roughtime](https://roughtime.googlesource.com/roughtime) secure time synchronization protocol.
 
 [Roughtime](https://roughtime.googlesource.com/roughtime) is a protocol that aims to achieve rough 
@@ -17,8 +17,7 @@ Nearenough bundles all required dependencies in the `lib` directory. Add those `
 your IDE's project classpath. Building is IDE-only for the moment. 
 
 ## Implementation Status
-Nearenough is in its infancy and very little is implemented. Expect significant changes as the code
-evolves.
+Nearenough is in its infancy. Expect significant changes as the code evolves.
   
 ## Contributors
 * Stuart Stock, original author (stuart {at} int08h.com)
@@ -26,9 +25,9 @@ evolves.
 ## Copyright and License
 Nearenough is Copyright (c) 2017 int08h LLC. All rights reserved. 
 
-int08h LLC licenses this file to you under the Apache License, version 2.0 (the "License"); you 
-may not use this file except in compliance with the License. You may obtain a copy of the License 
-from the [LICENSE](../master/LICENSE) file included with the software or at:
+int08h LLC licenses Nearenough (the "Software") to you under the Apache License, version 2.0 
+(the "License"); you may not use this Software except in compliance with the License. You may obtain 
+a copy of the License from the [LICENSE](../master/LICENSE) file included with the Software or at:
 
   http://www.apache.org/licenses/LICENSE-2.0
 

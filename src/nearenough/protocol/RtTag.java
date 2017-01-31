@@ -32,7 +32,7 @@ public enum RtTag {
   // Primitive collection eliminates boxing in fromUnsignedInt which is a hot method
   private static final IntObjectMap<RtTag> ENCODING_TO_TAG = new IntObjectHashMap<>(values().length);
 
-  // Tags for which values are nested messages
+  // Tags for which values are themselves RtMessages
   private static final Set<RtTag> NESTED_TAGS = EnumSet.of(CERT, DELE, SREP);
 
   static {
@@ -77,14 +77,23 @@ public enum RtTag {
     this.valueLE = Integer.reverseBytes(wireEncoding);
   }
 
+  /**
+   * @return The on-the-wire representation of this tag.
+   */
   public int wireEncoding() {
     return wireEncoding;
   }
 
+  /**
+   * @return The little-endian representation of this tag.
+   */
   public int valueLE() {
     return valueLE;
   }
 
+  /**
+   * @return True if this tag is numerically less than {@code other}, false otherwise.
+   */
   public boolean isLessThan(RtTag other) {
     checkNotNull(other, "cannot compare to null RtTag");
     // Enforcement of the "tags in strictly increasing order" rule is done using the
@@ -93,6 +102,9 @@ public enum RtTag {
     return Integer.compareUnsigned(valueLE, other.valueLE) < 0;
   }
 
+  /**
+   * @return True if the value of this tag is another {@link RtMessage}, false otherwise.
+   */
   public boolean isNested() {
     return NESTED_TAGS.contains(this);
   }

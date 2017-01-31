@@ -16,7 +16,7 @@ public final class MessageEncodingTest {
 
   @Test
   public void sizeOfEmptyMessage() {
-    int size = RtEncoding.computeEncodedSize(Collections.emptyMap());
+    int size = RtWire.computeEncodedSize(Collections.emptyMap());
     // Empty message is 4 bytes, a single num_tags value
     assertThat(size, equalTo(4));
   }
@@ -24,7 +24,7 @@ public final class MessageEncodingTest {
   @Test
   public void sizeOfSingleTagMessage() {
     Map<RtTag, byte[]> map = Collections.singletonMap(RtTag.NONC, new byte[]{1, 2, 3, 4});
-    int size = RtEncoding.computeEncodedSize(map);
+    int size = RtWire.computeEncodedSize(map);
     // Single tag message is 4 (num_tags) + 4 (NONC) + 4 (value)
     assertThat(size, equalTo(12));
   }
@@ -35,7 +35,7 @@ public final class MessageEncodingTest {
     map.put(RtTag.NONC, new byte[4]);
     map.put(RtTag.PAD, new byte[4]);
 
-    int size = RtEncoding.computeEncodedSize(map);
+    int size = RtWire.computeEncodedSize(map);
     // Two tag message
     //   4 num_tags
     //   8 (NONC, PAD) tags
@@ -47,7 +47,7 @@ public final class MessageEncodingTest {
   @Test
   public void encodeEmptyMessage() {
     RtMessage msg = RtMessage.fromBytes(new byte[]{0, 0, 0, 0});
-    ByteBuf onWire = RtEncoding.toWire(msg);
+    ByteBuf onWire = RtWire.toWire(msg);
 
     // Empty message will be a single uint32
     assertThat(onWire.readableBytes(), equalTo(4));
@@ -64,7 +64,7 @@ public final class MessageEncodingTest {
         .build();
 
     // Wire encoding is 4 (num_tags) + 4 (CERT) + 64 (CERT value)
-    ByteBuf onWire = RtEncoding.toWire(msg);
+    ByteBuf onWire = RtWire.toWire(msg);
     assertThat(onWire.readableBytes(), equalTo(72));
 
     // num_tags
@@ -101,7 +101,7 @@ public final class MessageEncodingTest {
     //   4 MAXT offset
     //  24 INDX value
     //  32 MAXT value
-    ByteBuf onWire = RtEncoding.toWire(msg);
+    ByteBuf onWire = RtWire.toWire(msg);
     assertThat(onWire.readableBytes(), equalTo(4 + 8 + 4 + 24 + 32));
 
     // num_tags

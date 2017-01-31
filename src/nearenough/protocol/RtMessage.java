@@ -15,8 +15,9 @@ import static nearenough.util.Preconditions.checkNotNull;
 /**
  * An immutable Roughtime protocol message.
  * <p>
- * Roughtime messages are a map of uint32's to arbitrary byte-strings. See the
- * <a href="https://roughtime.googlesource.com/roughtime">Roughtime project site</a> for
+ * Roughtime messages are a map of uint32's to arbitrary byte-strings.
+ *
+ * @see <a href="https://roughtime.googlesource.com/roughtime">Roughtime project site</a> for
  * the specification and more details.
  */
 public final class RtMessage {
@@ -90,7 +91,7 @@ public final class RtMessage {
   private int extractNumTags(ByteBuf msg) {
     long readNumTags = msg.readUnsignedIntLE();
 
-    // Spec says max # tags can be 2^32-1, but capping at 64k tags for the moment.
+    // Spec says max # tags can be 2^32-1, but capping at 64k tags in this implementation
     if (readNumTags < 0 || readNumTags > 0xffff) {
       throw new InvalidNumTagsException("invalid num_tags value " + readNumTags);
     }

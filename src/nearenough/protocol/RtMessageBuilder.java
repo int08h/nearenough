@@ -40,7 +40,7 @@ public final class RtMessageBuilder {
     checkNotNull(tag, "tag must be non-null");
     checkNotNull(msg, "msg must be non-null");
 
-    ByteBuf encoded = RtEncoding.toWire(msg, allocator);
+    ByteBuf encoded = RtWire.toWire(msg, allocator);
     return add(tag, encoded);
   }
 
@@ -59,7 +59,7 @@ public final class RtMessageBuilder {
   public RtMessage build() {
     checkArgument(!map.isEmpty(), "Cannot build an empty RtMessage");
 
-    int encodedSize = RtEncoding.computeEncodedSize(map);
+    int encodedSize = RtWire.computeEncodedSize(map);
 
     if (encodedSize < MIN_REQUEST_LENGTH && shouldAddPadding) {
       // Additional bytes added to message size for PAD tag (4) and its offset field (4)
