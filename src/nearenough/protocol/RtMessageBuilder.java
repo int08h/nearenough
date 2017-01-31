@@ -3,7 +3,6 @@ package nearenough.protocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -68,10 +67,7 @@ public final class RtMessageBuilder {
       // The overhead bytes alone may be sufficient to reach the minimum size; it's possible
       // to end up with a zero-length pad value
       int paddingBytes = Math.max(0, (MIN_REQUEST_LENGTH - encodedSize - padOverhead));
-
       byte[] padding = new byte[paddingBytes];
-      Arrays.fill(padding, (byte) 0x00);
-
       map.put(RtTag.PAD, padding);
     }
 
