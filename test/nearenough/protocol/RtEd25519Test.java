@@ -5,6 +5,7 @@ import org.junit.Test;
 import static net.i2p.crypto.eddsa.Utils.hexToBytes;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 
 public final class RtEd25519Test {
 
@@ -46,5 +47,21 @@ public final class RtEd25519Test {
     RtEd25519.Signer signer = new RtEd25519.Signer(seed);
     signer.update(message);
     assertArrayEquals("message signature doesn't match", signature, signer.sign());
+  }
+
+  @Test
+  public void roundTripSignAndVerify() throws Exception {
+    byte[] seed = hexToBytes("334a05b07352a5436e180356da0ae6efa0345ff7fb1572575772e8005ed978e9");
+    byte[] message = "Hello world".getBytes();
+
+    RtEd25519.Signer signer = new RtEd25519.Signer(seed);
+    signer.update(message);
+    byte[] signature = signer.sign();
+
+    byte[] pubKey = signer.getPubKey();
+    RtEd25519.Verifier verifier = new RtEd25519.Verifier(pubKey);
+    verifier.update(message);
+
+    assertTrue("signature validates", verifier.verify(signature));
   }
 }
