@@ -13,7 +13,7 @@ import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
 
-public final class MessageParsingTest {
+public final class RtMessageTest {
 
   @Test
   public void parseEmtpyMessage() {

@@ -3,16 +3,28 @@ package nearenough.protocol;
 import io.netty.buffer.ByteBuf;
 import org.junit.Test;
 
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static net.i2p.crypto.eddsa.Utils.hexToBytes;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertArrayEquals;
 
-public final class MessageEncodingTest {
+public final class RtWireTest {
+
+  @Test
+  public void decodeMidpoint() {
+    ZonedDateTime expectedMidpoint = ZonedDateTime.parse("2017-01-31T19:41:15.267Z[UTC]");
+
+    byte[] midpointBytes = hexToBytes("90a37a1d69470500");
+    ZonedDateTime readMidpoint = RtWire.timeFromMidpoint(midpointBytes);
+
+    assertThat(readMidpoint, equalTo(expectedMidpoint));
+  }
 
   @Test
   public void sizeOfEmptyMessage() {
