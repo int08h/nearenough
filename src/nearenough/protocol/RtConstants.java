@@ -17,6 +17,9 @@ public final class RtConstants {
   /** Size (in bytes) of the client's nonce */
   public static final int NONCE_LENGTH = 64;
 
+  /** Size (in bytes) of an Ed25519 signature */
+  public static final int SIGNATURE_LENGTH = 64;
+
   /** Size (in bytes) of server's timestamp value */
   public static final int TIMESTAMP_LENGTH = 8;
 

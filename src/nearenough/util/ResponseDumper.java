@@ -15,6 +15,7 @@ import java.net.InetSocketAddress;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Random;
 
@@ -87,7 +88,7 @@ public final class ResponseDumper {
     }
 
     private void printTime(RtMessage response) {
-      ZonedDateTime now = ZonedDateTime.now();
+      ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
       RtMessage srepMsg = RtMessage.fromBytes(response.get(RtTag.SREP));
       byte[] midpBytes = srepMsg.get(RtTag.MIDP);
       checkState(midpBytes.length == TIMESTAMP_LENGTH);

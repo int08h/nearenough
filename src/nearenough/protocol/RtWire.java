@@ -19,8 +19,7 @@ import static nearenough.util.Preconditions.*;
 public final class RtWire {
 
   /**
-   * Convert the on-the-wire UTC midpoint value to a {@link ZonedDateTime} in the system default
-   * time zone.
+   * Convert the on-the-wire UTC midpoint value to a {@link ZonedDateTime} in UTC.
    *
    * @param midpBytes The MIDP value
    *
@@ -31,7 +30,7 @@ public final class RtWire {
 
     long midp = BytesUtil.getLongLE(midpBytes, 0);
     Instant midpInst = Instant.ofEpochMilli(midp / 1000);
-    return ZonedDateTime.ofInstant(midpInst, ZoneId.systemDefault());
+    return ZonedDateTime.ofInstant(midpInst, ZoneId.of("UTC"));
   }
 
   /**
@@ -108,4 +107,8 @@ public final class RtWire {
       buf.writeBytes(bytes);
     }
   }
+
+  // Utility class
+  private RtWire() {}
+
 }

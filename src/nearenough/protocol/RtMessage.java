@@ -53,11 +53,14 @@ public final class RtMessage {
 
     if (numTags == 0) {
       this.map = Collections.emptyMap();
-    } else if (numTags == 1) {
-      checkSufficientPayload(msg);
+      return;
+    }
+
+    checkSufficientPayload(msg);
+
+    if (numTags == 1) {
       this.map = extractSingleMapping(msg);
     } else {
-      checkSufficientPayload(msg);
       this.map = extractMultiMapping(msg);
     }
   }
