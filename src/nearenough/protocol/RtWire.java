@@ -29,7 +29,7 @@ public final class RtWire {
     checkArgument(midpBytes.length == TIMESTAMP_LENGTH, "invalid MIDP length %s", midpBytes.length);
 
     long midp = BytesUtil.getLongLE(midpBytes, 0);
-    Instant midpInst = Instant.ofEpochMilli(midp / 1000);
+    Instant midpInst = Instant.ofEpochMilli(midp / 1000L);
     return ZonedDateTime.ofInstant(midpInst, ZoneId.of("UTC"));
   }
 

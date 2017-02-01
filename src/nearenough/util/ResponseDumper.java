@@ -1,5 +1,9 @@
 package nearenough.util;
 
+import static nearenough.protocol.RtConstants.TIMESTAMP_LENGTH;
+import static nearenough.util.Preconditions.checkState;
+import static net.i2p.crypto.eddsa.Utils.hexToBytes;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -9,19 +13,18 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import nearenough.protocol.*;
 
 import java.net.InetSocketAddress;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Random;
-
-import static nearenough.protocol.RtConstants.TIMESTAMP_LENGTH;
-import static nearenough.util.Preconditions.checkState;
-import static net.i2p.crypto.eddsa.Utils.hexToBytes;
+import nearenough.client.RoughtimeClient;
+import nearenough.exceptions.MerkleTreeInvalid;
+import nearenough.exceptions.MidpointInvalid;
+import nearenough.exceptions.SignatureInvalid;
+import nearenough.protocol.RtMessage;
+import nearenough.protocol.RtTag;
+import nearenough.protocol.RtWire;
 
 /**
  * Send a one-off request to the given Roughtime server and dump the response (if any)
@@ -37,29 +40,16 @@ public final class ResponseDumper {
   private static final class RequestHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 
     private final InetSocketAddress addr;
-    private final byte[] nonce;
-    private final byte[] expectedLeafHash;
+    private final RoughtimeClient client;
 
     public RequestHandler(InetSocketAddress addr) {
-      Random rand = new Random();
-      RtHashing hasher = new RtHashing();
-
       this.addr = addr;
-      this.nonce = new byte[RtConstants.NONCE_LENGTH];
-      rand.nextBytes(nonce);
-      this.expectedLeafHash = hasher.hashLeaf(nonce);
-
-      System.out.println("NONC       = " + ByteBufUtil.hexDump(nonce));
-      System.out.println("LEAF(NONC) = " + ByteBufUtil.hexDump(expectedLeafHash));
+      this.client = new RoughtimeClient(GOOGLE_PUBKEY);
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-      RtMessage msg = RtMessage.builder()
-          .addPadding(true)
-          .add(RtTag.NONC, nonce)
-          .build();
-
+      RtMessage msg = client.createRequest();
       ByteBuf buf = RtWire.toWire(msg);
 
       ctx.writeAndFlush(new DatagramPacket(buf, addr))
@@ -81,10 +71,30 @@ public final class ResponseDumper {
 
       verifyCertSignature(response);
       verifySrepSignature(response);
+      verifyNonceIncluded(response);
+      verifyMidpointBounds(response);
 
       printTime(response);
 
       ctx.close();
+    }
+
+    private void verifyMidpointBounds(RtMessage response) {
+      try {
+        client.verifyMidpointBounds(response);
+        System.out.println("Midpoint is GOOD");
+      } catch (MidpointInvalid e) {
+        System.out.println("Midpoint INVALID: " + e.getMessage());
+      }
+    }
+
+    private void verifyNonceIncluded(RtMessage response) {
+      try {
+        client.verifyNonceIncluded(response);
+        System.out.println("Nonce IS included in response");
+      } catch (MerkleTreeInvalid e) {
+        System.out.println("Nonce NOT included in response: " + e.getMessage());
+      }
     }
 
     private void printTime(RtMessage response) {
@@ -97,31 +107,22 @@ public final class ResponseDumper {
       System.out.println("Now  : " + now);
     }
 
-    private void verifySrepSignature(RtMessage response) throws InvalidKeyException, SignatureException {
-      RtMessage certMsg = RtMessage.fromBytes(response.get(RtTag.CERT));
-      RtMessage deleMsg = RtMessage.fromBytes(certMsg.get(RtTag.DELE));
-
-      byte[] pubKey = deleMsg.get(RtTag.PUBK);
-      RtEd25519.Verifier verifier = new RtEd25519.Verifier(pubKey);
-
-      byte[] srepContent = response.get(RtTag.SREP);
-      verifier.update(RtConstants.SIGNED_RESPONSE_CONTEXT);
-      verifier.update(srepContent);
-
-      System.out.println("SREP signature is " + verifier.verify(response.get(RtTag.SIG)));
+    private void verifySrepSignature(RtMessage response) {
+      try {
+        client.verifyTopLevelSignature(response);
+        System.out.println("SREP signature is GOOD");
+      } catch (SignatureInvalid e) {
+        System.out.println("SREP signature BAD: " + e.getMessage());
+      }
     }
 
-    private void verifyCertSignature(RtMessage response) throws InvalidKeyException, SignatureException {
-      RtEd25519.Verifier verifier = new RtEd25519.Verifier(GOOGLE_PUBKEY);
-      RtMessage certMsg = RtMessage.fromBytes(response.get(RtTag.CERT));
-
-      verifier.update(RtConstants.CERTIFICATE_CONTEXT);
-      verifier.update(certMsg.get(RtTag.DELE));
-
-      byte[] certSig = certMsg.get(RtTag.SIG);
-      checkState(certSig.length == 64, "invalid signature length %s", certSig.length);
-
-      System.out.println("CERT signature is " + verifier.verify(certSig));
+    private void verifyCertSignature(RtMessage response) {
+      try {
+        client.verifyDelegatedKey(response);
+        System.out.println("CERT signature is GOOD");
+      } catch (SignatureInvalid e) {
+        System.out.println("CERT signature BAD: " + e.getMessage());
+      }
     }
 
     @Override
