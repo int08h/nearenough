@@ -16,8 +16,44 @@ created by Adam Langley and Robert Obryk.
 Nearenough bundles all required dependencies in the `lib` directory. Add those `.jar` files to
 your IDE's project classpath. Building is IDE-only for the moment. 
 
+## Client Quickstart
+How to query a Roughtime server for its midpoint (the server's time):
+
+```java
+// The RoughTime server's long term public key, must be obtained a priori
+byte[] serverLongTermPublicKey = { ... };
+
+// Create client passing the server's long-term key
+RoughtimeClient client = new RoughtimeClient(serverLongTermPublicKey);
+
+// Construct a request, then encode it for transmission
+RtMessage request = client.createRequest();
+ByteBuf encodedRequest = RtWire.toWire(request);
+
+// send encodedRequest using NIO, Netty, or some other mechanism...
+RtMessage response = // ...and receive the response via NIO, Netty, etc ...
+
+// Process the response
+client.processResponse(response);
+
+// Check the result
+if (client.isResponseValid()) {
+  Instant midpoint = Instant.ofEpochMilli(client.midpoint() / 1000L);
+  System.out.println("midpoint: " + midpoint);
+} else {
+  System.out.println("Invalid response: " + client.invalidResponseCause().getMessage());
+} 
+```
+See the javadocs in [`RoughtimeClient.java`](../master/src/nearenough/client/RoughtimeClient.java) 
+for more information.
+
 ## Implementation Status
-Nearenough is in its infancy. Expect significant changes as the code evolves.
+Nearenough is not stable yet. Expect significant changes as the code evolves.
+
+* Protocol - Feature complete except for validation of multiple nonces in a response (single nonce
+             case is supported). 
+* Client - Feature complete
+* Server - Not started
   
 ## Contributors
 * Stuart Stock, original author (stuart {at} int08h.com)

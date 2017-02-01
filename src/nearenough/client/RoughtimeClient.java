@@ -1,9 +1,13 @@
 package nearenough.client;
 
-import nearenough.exceptions.MidpointInvalid;
+import nearenough.exceptions.InvalidRoughTimeMessage;
 import nearenough.exceptions.MerkleTreeInvalid;
+import nearenough.exceptions.MidpointInvalid;
 import nearenough.exceptions.SignatureInvalid;
-import nearenough.protocol.*;
+import nearenough.protocol.RtEd25519;
+import nearenough.protocol.RtHashing;
+import nearenough.protocol.RtMessage;
+import nearenough.protocol.RtTag;
 import nearenough.util.BytesUtil;
 
 import java.security.InvalidKeyException;
@@ -14,23 +18,62 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Random;
 
-import static nearenough.protocol.RtConstants.CERTIFICATE_CONTEXT;
-import static nearenough.protocol.RtConstants.NONCE_LENGTH;
-import static nearenough.protocol.RtConstants.PUBKEY_LENGTH;
-import static nearenough.protocol.RtConstants.SIGNATURE_LENGTH;
-import static nearenough.protocol.RtConstants.SIGNED_RESPONSE_CONTEXT;
-import static nearenough.util.Preconditions.checkArgument;
-import static nearenough.util.Preconditions.checkState;
+import static nearenough.protocol.RtConstants.*;
+import static nearenough.util.Preconditions.*;
 
+/**
+ * Creates RoughTime client requests and processes server responses.
+ * <p>
+ * The high-level API consists of:
+ * <ul>
+ *   <li>{@link #createRequest()} - Constructs a RoughTime client request</li>
+ *   <li>{@link #processResponse(RtMessage)} - Validates the server's response</li>
+ *   <li>{@link #isResponseValid()} - Indicates if the response passed validation</li>
+ *   <li>{@link #midpoint()} and {@link #radius()} - Returns the server's provided time value
+ *   (midpoint) and uncertainty (radius) if the response was valid</li>
+ * </ul>
+ *
+ * Typical client code will use {@link RoughtimeClient} similar to this:
+ * <pre>
+ *   // The RoughTime server's long term public key, must be obtained a priori
+ *   byte[] serverLongTermPublicKey = { ... };
+ *
+ *   // Create client passing the server's long-term key
+ *   RoughtimeClient client = new RoughtimeClient(serverLongTermPublicKey);
+ *
+ *   // Construct a request, then encode it for transmission
+ *   RtMessage request = client.createRequest();
+ *   ByteBuf encodedRequest = RtWire.toWire(request);
+ *
+ *   // ... send encodedRequest using NIO, Netty, or some other mechanism ...
+ *
+ *   RtMessage response = // ... and receive response via NIO, Netty, etc ...
+ *
+ *   // Process the response
+ *   client.processResponse(response);
+ *
+ *   // Check the result
+ *   if (client.isResponseValid()) {
+ *     Instant midpoint = Instant.ofEpochMilli(client.midpoint() / 1000L);
+ *     System.out.println("midpoint: " + midpoint);
+ *   } else {
+ *     System.out.println("Invalid response: " + client.invalidResponseCause().getMessage());
+ *   }
+ * </pre>
+ */
 public final class RoughtimeClient {
 
   private final byte[] nonce;
+  private final byte[] longTermKey;
   private final Random random;
-  private final RtEd25519.Verifier longTermKeyVerifier;
 
+  private long midpoint;
+  private int radius;
   private byte[] delegatedKey;
   private long delegationMinT;
   private long delegationMaxT;
+  private boolean isResponseValid;
+  private InvalidRoughTimeMessage invalidResponseCause;
 
   /**
    * Creates a new instance using {@link SecureRandom} as the random number generator
@@ -49,17 +92,12 @@ public final class RoughtimeClient {
    */
   public RoughtimeClient(byte[] publicKey, Random random) {
     checkArgument((publicKey != null) && (publicKey.length == PUBKEY_LENGTH), "invalid public key");
+    checkNotNull(random, "random");
 
-    try {
-      this.nonce = new byte[NONCE_LENGTH];
-      this.random = random;
-      this.longTermKeyVerifier = new RtEd25519.Verifier(publicKey);
-
-      random.nextBytes(nonce);
-
-    } catch (InvalidKeyException | SignatureException e) {
-      throw new IllegalArgumentException("Unable to create verifier from public key", e);
-    }
+    this.nonce = new byte[NONCE_LENGTH];
+    this.longTermKey = publicKey;
+    this.random = random;
+    random.nextBytes(nonce);
   }
 
   /**
@@ -67,6 +105,38 @@ public final class RoughtimeClient {
    */
   public byte[] nonce() {
     return nonce;
+  }
+
+  /**
+   * @return The midpoint of the response if the response is valid ({@link #isResponseValid}
+   * returns {@code true}), otherwise returns zero (0).
+   */
+  public long midpoint() {
+    return isResponseValid ? midpoint : 0;
+  }
+
+  /**
+   * @return The radius of the response if the response is valid ({@link #isResponseValid}
+   * returns {@code true}), otherwise returns zero (0).
+   */
+  public int radius() {
+    return isResponseValid ? radius : 0;
+  }
+
+  /**
+   * @return {@code True} if and only if the response was valid in all respects, false otherwise.
+   */
+  public boolean isResponseValid() {
+    return isResponseValid;
+  }
+
+  /**
+   * @return If the response is invalid ({@link #isResponseValid} returns {@code false}), the
+   * {@link InvalidRoughTimeMessage exception} associated with the failure of the response to
+   * validate, or {@code null} if the message is valid.
+   */
+  public InvalidRoughTimeMessage invalidResponseCause() {
+    return isResponseValid ? null : invalidResponseCause;
   }
 
   /**
@@ -80,6 +150,30 @@ public final class RoughtimeClient {
         .addPadding(true)
         .add(RtTag.NONC, nonce)
         .build();
+  }
+
+  /**
+   * Validate the server's response:
+   * <ol>
+   *   <li>Verify signature of the delegation (DELE) certificate</li>
+   *   <li>Verify top-level signature of the signed-response (SREP) using the delegated key</li>
+   *   <li>Verify the request's nonce (NONC) is included in the response's Merkle tree.</li>
+   *   <li>Verify the midpoint (MIDP) lies within the delegation time bounds (MINT, MAXT).</li>
+   * </ol>
+   *
+   * @param response Response from the Roughtime server
+   */
+  public void processResponse(RtMessage response) {
+    try {
+      verifyDelegatedKey(response);
+      verifyTopLevelSignature(response);
+      verifyNonceIncluded(response);
+      verifyMidpointBounds(response);
+      isResponseValid = true;
+    } catch (InvalidRoughTimeMessage e) {
+      isResponseValid = false;
+      invalidResponseCause = e;
+    }
   }
 
   /**
@@ -148,7 +242,8 @@ public final class RoughtimeClient {
     byte[] srepBytes = responseMsg.get(RtTag.SREP);
     RtMessage srepMsg = RtMessage.fromBytes(srepBytes);
 
-    long midpoint = BytesUtil.getLongLE(srepMsg.get(RtTag.MIDP), 0);
+    midpoint = BytesUtil.getLongLE(srepMsg.get(RtTag.MIDP), 0);
+    radius = BytesUtil.getIntLE(srepMsg.get(RtTag.RADI), 0);
     validateMidpointBounds(midpoint);
   }
 
@@ -157,17 +252,18 @@ public final class RoughtimeClient {
    */
   private void validateDelegationSignature(byte[] deleBytes, byte[] signature) {
     if (signature.length != SIGNATURE_LENGTH) {
-      throw new SignatureInvalid("SIG is the wrong length: " + signature.length);
+      throw new SignatureInvalid("CERT SIG value is the wrong length: " + signature.length);
     }
 
     try {
-      longTermKeyVerifier.update(CERTIFICATE_CONTEXT);
-      longTermKeyVerifier.update(deleBytes);
+      RtEd25519.Verifier verifier = new RtEd25519.Verifier(longTermKey);
+      verifier.update(CERTIFICATE_CONTEXT);
+      verifier.update(deleBytes);
 
-      if (!longTermKeyVerifier.verify(signature)) {
+      if (!verifier.verify(signature)) {
         throw new SignatureInvalid("signature does not match");
       }
-    } catch (SignatureException e) {
+    } catch (InvalidKeyException | SignatureException e) {
       throw new SignatureInvalid(e.getMessage());
     }
   }
@@ -177,7 +273,7 @@ public final class RoughtimeClient {
    */
   private void validateSignedResponse(byte[] srepBytes, byte[] signature) {
     if (signature.length != SIGNATURE_LENGTH) {
-      throw new SignatureInvalid("SIG is the wrong length: " + signature.length);
+      throw new SignatureInvalid("top-level SIG is the wrong length: " + signature.length);
     }
 
     try {
