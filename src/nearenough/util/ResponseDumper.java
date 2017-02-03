@@ -57,23 +57,22 @@ public final class ResponseDumper {
           "Read message of %d bytes from %s:\n", msg.content().readableBytes(), msg.sender()
       );
       System.out.println(ByteBufUtil.prettyHexDump(msg.content()));
+
       RtMessage response = new RtMessage(msg.content());
       System.out.println(response);
-
       client.processResponse(response);
 
       if (client.isResponseValid()) {
         Instant midpoint = Instant.ofEpochMilli(client.midpoint() / 1000L);
-        Instant now = Instant.now();
+        Instant local = Instant.now();
         System.out.println("midpoint    : " + midpoint);
-        System.out.println("local clock : " + now);
+        System.out.println("local clock : " + local);
       } else {
         System.out.println("Response INVALID: " + client.invalidResponseCause().getMessage());
       }
 
       ctx.close();
     }
-
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {

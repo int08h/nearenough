@@ -293,6 +293,8 @@ public final class RoughtimeClient {
    * Verify that this instance's nonce is included in the response's Merkle tree
    */
   private void validateMerkleTree(byte[] root, byte[] path, int index) {
+    checkArgument((path.length == 0) || ((path.length % 64) == 0), "path not multiple of 64");
+
     RtHashing hasher = new RtHashing();
 
     if (path.length == 0 && index == 0) {
@@ -303,9 +305,24 @@ public final class RoughtimeClient {
         throw new MerkleTreeInvalid("nonce not found in response Merkle tree");
       }
 
-    } else if (path.length > 0 && index > 0){
+    } else if (path.length > 0) {
       // Response includes more than once nonce
-      // TODO(stuart) full Merkle tree validation
+      byte[] computedRoot = hasher.hashLeaf(nonce);
+
+      while (path.length > 0) {
+        if ((index & 1) == 0) {
+          computedRoot = hasher.hashNode(computedRoot, Arrays.copyOfRange(path, 0, 64));
+        } else {
+          computedRoot = hasher.hashNode(Arrays.copyOfRange(path, 0, 64), computedRoot);
+        }
+
+        index >>= 1;
+        path = Arrays.copyOfRange(path, 64, path.length);
+      }
+
+      if (!Arrays.equals(root, computedRoot)) {
+        throw new MerkleTreeInvalid("Merkle tree validation failed");
+      }
 
     } else {
       // Protocol spec violation
