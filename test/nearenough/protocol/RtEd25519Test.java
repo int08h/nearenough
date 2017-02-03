@@ -2,7 +2,7 @@ package nearenough.protocol;
 
 import org.junit.Test;
 
-import static net.i2p.crypto.eddsa.Utils.hexToBytes;
+import static nearenough.util.BytesUtil.hexToBytes;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
