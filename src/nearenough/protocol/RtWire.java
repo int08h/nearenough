@@ -2,36 +2,17 @@ package nearenough.protocol;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import nearenough.util.BytesUtil;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Iterator;
 import java.util.Map;
 
-import static nearenough.protocol.RtConstants.TIMESTAMP_LENGTH;
-import static nearenough.util.Preconditions.*;
+import static nearenough.util.Preconditions.checkNotNull;
+import static nearenough.util.Preconditions.checkState;
 
 /**
  * Encodes/decodes {@link RtMessage Roughtime messages} and fields to/from their on-the-wire format.
  */
 public final class RtWire {
-
-  /**
-   * Convert the on-the-wire UTC midpoint value to a {@link ZonedDateTime} in UTC.
-   *
-   * @param midpBytes The MIDP value
-   *
-   * @return A {@link ZonedDateTime} that corresponds to the UTC time from the provided MIDP.
-   */
-  public static ZonedDateTime timeFromMidpoint(byte[] midpBytes) {
-    checkArgument(midpBytes.length == TIMESTAMP_LENGTH, "invalid MIDP length %s", midpBytes.length);
-
-    long midp = BytesUtil.getLongLE(midpBytes, 0);
-    Instant midpInst = Instant.ofEpochMilli(midp / 1000L);
-    return ZonedDateTime.ofInstant(midpInst, ZoneId.of("UTC"));
-  }
 
   /**
    * Encode the given message for network transmission using the system default ByteBuf allocator.
