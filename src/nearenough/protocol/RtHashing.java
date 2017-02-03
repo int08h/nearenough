@@ -27,7 +27,6 @@ public final class RtHashing {
   public byte[] hashLeaf(byte[] leaf) {
     checkNotNull(leaf, "leaf");
 
-    sha512.reset();
     sha512.update(RtConstants.TREE_LEAF_TWEAK);
     sha512.update(leaf);
     return sha512.digest();
@@ -37,7 +36,6 @@ public final class RtHashing {
     checkNotNull(left, "left");
     checkNotNull(right, "right");
 
-    sha512.reset();
     sha512.update(RtConstants.TREE_NODE_TWEAK);
     sha512.update(left);
     sha512.update(right);
