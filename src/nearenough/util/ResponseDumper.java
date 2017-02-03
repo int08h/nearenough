@@ -65,7 +65,8 @@ public final class ResponseDumper {
       if (client.isResponseValid()) {
         Instant midpoint = Instant.ofEpochMilli(client.midpoint() / 1000L);
         Instant local = Instant.now();
-        System.out.println("midpoint    : " + midpoint);
+        int radiusSec = client.radius() / 1_000_000;
+        System.out.println("midpoint    : " + midpoint + " (radius " + radiusSec + " sec)");
         System.out.println("local clock : " + local);
       } else {
         System.out.println("Response INVALID: " + client.invalidResponseCause().getMessage());
