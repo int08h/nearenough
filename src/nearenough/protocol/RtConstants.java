@@ -8,7 +8,7 @@ public final class RtConstants {
   /** Minimum size (in bytes) of a client request */
   public static final int MIN_REQUEST_LENGTH = 1024;
 
-  /** Minimum size (in bytes) of seeds used to derived private keys */
+  /** Minimum size (in bytes) of seeds used to derive private keys */
   public static final int MIN_SEED_LENGTH = 32;
 
   /** Size (in bytes) of an Ed25519 public key */
