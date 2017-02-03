@@ -64,8 +64,7 @@ import static nearenough.util.Preconditions.*;
 public final class RoughtimeClient {
 
   private final byte[] nonce;
-  private final byte[] longTermKey;
-  private final Random random;
+  private final byte[] longTermPubKey;
 
   private long midpoint;
   private int radius;
@@ -76,7 +75,8 @@ public final class RoughtimeClient {
   private InvalidRoughTimeMessage invalidResponseCause;
 
   /**
-   * Creates a new instance using {@link SecureRandom} as the random number generator
+   * Creates a new instance using {@link SecureRandom} as the random number generator for generating
+   * a nonce.
    *
    * @param publicKey long-term public key of the Roughtime server
    */
@@ -85,19 +85,33 @@ public final class RoughtimeClient {
   }
 
   /**
-   * Creates a new instance using the provided random number generator
+   * Creates a new instance using the provided random number generator to generate a nonce
    *
    * @param publicKey long-term public key of the Roughtime server
-   * @param random random number generator used to create nonces
+   * @param random random number generator used to create the nonce
    */
   public RoughtimeClient(byte[] publicKey, Random random) {
     checkArgument((publicKey != null) && (publicKey.length == PUBKEY_LENGTH), "invalid public key");
     checkNotNull(random, "random");
 
     this.nonce = new byte[NONCE_LENGTH];
-    this.longTermKey = publicKey;
-    this.random = random;
+    this.longTermPubKey = publicKey;
     random.nextBytes(nonce);
+  }
+
+  /**
+   * Creates a new instance using the provided nonce. It is the caller's responsibility to ensure
+   * the uniqueness of the nonce.
+   *
+   * @param publicKey long-term public key of the Roughtime server
+   * @param nonce nonce to use in request
+   */
+  public RoughtimeClient(byte[] publicKey, byte[] nonce) {
+    checkArgument((publicKey != null) && (publicKey.length == PUBKEY_LENGTH), "invalid public key");
+    checkArgument((nonce != null) && (nonce.length == NONCE_LENGTH), "invalid nonce");
+
+    this.nonce = nonce;
+    this.longTermPubKey = publicKey;
   }
 
   /**
@@ -256,7 +270,7 @@ public final class RoughtimeClient {
     }
 
     try {
-      RtEd25519.Verifier verifier = new RtEd25519.Verifier(longTermKey);
+      RtEd25519.Verifier verifier = new RtEd25519.Verifier(longTermPubKey);
       verifier.update(CERTIFICATE_CONTEXT);
       verifier.update(deleBytes);
 
