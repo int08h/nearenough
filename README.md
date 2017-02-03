@@ -50,8 +50,7 @@ for more information.
 ## Implementation Status
 Nearenough is not stable yet. Expect significant changes as the code evolves.
 
-* Protocol - Feature complete except for validation of multiple nonces in a response (single nonce
-             case is supported). 
+* Protocol - Feature complete
 * Client - Feature complete
 * Server - Not started
   
