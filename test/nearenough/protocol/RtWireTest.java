@@ -85,45 +85,45 @@ public final class RtWireTest {
 
   @Test
   public void encodeTwoTagMessage() {
-    byte[] tag1Value = new byte[24];
-    byte[] tag2Value = new byte[32];
-    Arrays.fill(tag1Value, (byte) '1');
-    Arrays.fill(tag2Value, (byte) '2');
+    byte[] indxValue = new byte[24];
+    byte[] maxtValue = new byte[32];
+    Arrays.fill(indxValue, (byte) '1');
+    Arrays.fill(maxtValue, (byte) '2');
 
     RtMessage msg = RtMessage.builder()
-        .add(RtTag.INDX, tag1Value)
-        .add(RtTag.MAXT, tag2Value)
+        .add(RtTag.INDX, indxValue)
+        .add(RtTag.MAXT, maxtValue)
         .build();
 
     // Wire encoding
     //   4 num_tags
-    //   8 (INDX, MAXT) tags
-    //   4 MAXT offset
-    //  24 INDX value
-    //  32 MAXT value
+    //   8 (MAXT, INDX) tags
+    //   4 INDX offset
+    //  24 MAXT value
+    //  32 INDX value
     ByteBuf onWire = RtWire.toWire(msg);
     assertThat(onWire.readableBytes(), equalTo(4 + 8 + 4 + 24 + 32));
 
     // num_tags
     assertThat(onWire.readIntLE(), equalTo(2));
 
-    // Offset past INDX value to start of MAXT value
-    assertThat(onWire.readIntLE(), equalTo(tag1Value.length));
+    // Offset past MAXT value to start of INDX value
+    assertThat(onWire.readIntLE(), equalTo(maxtValue.length));
 
-    // INDX tag
-    assertThat(onWire.readInt(), equalTo(RtTag.INDX.wireEncoding()));
     // MAXT tag
     assertThat(onWire.readInt(), equalTo(RtTag.MAXT.wireEncoding()));
-
-    // INDX value
-    byte[] readTag1Value = new byte[tag1Value.length];
-    onWire.readBytes(readTag1Value);
-    assertArrayEquals(tag1Value, readTag1Value);
+    // INDX tag
+    assertThat(onWire.readInt(), equalTo(RtTag.INDX.wireEncoding()));
 
     // MAXT value
-    byte[] readTag2Value = new byte[tag2Value.length];
+    byte[] readTag1Value = new byte[maxtValue.length];
+    onWire.readBytes(readTag1Value);
+    assertArrayEquals(maxtValue, readTag1Value);
+
+    // INDX value
+    byte[] readTag2Value = new byte[indxValue.length];
     onWire.readBytes(readTag2Value);
-    assertArrayEquals(tag2Value, readTag2Value);
+    assertArrayEquals(indxValue, readTag2Value);
 
     // Message was completely read
     assertThat(onWire.readableBytes(), equalTo(0));
