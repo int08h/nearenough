@@ -17,6 +17,7 @@ import java.net.InetSocketAddress;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 
+import static nearenough.util.BytesUtil.bytesToHex;
 import static nearenough.util.BytesUtil.hexToBytes;
 
 /**
@@ -53,6 +54,7 @@ public final class ResponseDumper {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
+      System.out.println("NONCE: " + bytesToHex(client.nonce()));
       System.out.printf(
           "Read message of %d bytes from %s:\n", msg.content().readableBytes(), msg.sender()
       );

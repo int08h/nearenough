@@ -13,8 +13,6 @@ import nearenough.util.BytesUtil;
 import java.security.InvalidKeyException;
 import java.security.SecureRandom;
 import java.security.SignatureException;
-import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -275,7 +273,7 @@ public final class RoughtimeClient {
       verifier.update(deleBytes);
 
       if (!verifier.verify(signature)) {
-        throw new SignatureInvalid("signature does not match");
+        throw new SignatureInvalid("signature on DELE does not match");
       }
     } catch (InvalidKeyException | SignatureException e) {
       throw new SignatureInvalid(e.getMessage());
@@ -296,7 +294,7 @@ public final class RoughtimeClient {
       verifier.update(srepBytes);
 
       if (!verifier.verify(signature)) {
-        throw new SignatureInvalid("delegated signature does not match");
+        throw new SignatureInvalid("signature on SREP does not match");
       }
     } catch (InvalidKeyException | SignatureException e) {
       throw new SignatureInvalid(e.getMessage());
@@ -353,13 +351,10 @@ public final class RoughtimeClient {
     boolean isAfterMaxT = Long.compareUnsigned(midp, delegationMaxT) > 0;
 
     if (isBeforeMinT || isAfterMaxT) {
-      ZonedDateTime zdtMidp = ZonedDateTime.from(Instant.ofEpochMilli(midp / 1000L));
-      ZonedDateTime zdtMinT = ZonedDateTime.from(Instant.ofEpochMilli(delegationMinT / 1000L));
-      ZonedDateTime zdtMaxT = ZonedDateTime.from(Instant.ofEpochMilli(delegationMaxT / 1000L));
-
       String message = String.format(
           "Midpoint falls outside delegation bounds: midp=%s, bounds=[%s, %s]",
-          zdtMidp, zdtMinT, zdtMaxT
+          Long.toUnsignedString(midp), Long.toUnsignedString(delegationMinT),
+          Long.toUnsignedString(delegationMaxT)
       );
 
       throw new MidpointInvalid(message);

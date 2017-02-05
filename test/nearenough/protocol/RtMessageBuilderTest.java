@@ -4,13 +4,40 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 
 public final class RtMessageBuilderTest {
+
+  @Test
+  public void tagsInBuiltMessageAreInAscendingOrder() {
+    RtMessage msg = RtMessage.builder()
+        .add(RtTag.ROOT, new byte[64])
+        .add(RtTag.RADI, new byte[4])
+        .add(RtTag.MIDP, new byte[]{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+        .add(RtTag.SIG, new byte[4])
+        .add(RtTag.MAXT, new byte[4])
+        .build();
+
+    ArrayList<RtTag> tags = new ArrayList<>(msg.mapping().keySet());
+
+    RtTag prevTag = tags.get(0);
+    for (int i = 1; i < tags.size(); i++) {
+      RtTag currentTag = tags.get(i);
+
+      String testMsg = String.format(
+          "prev = %s %x, current = %s %x",
+          prevTag, prevTag.valueLE(), currentTag, currentTag.valueLE()
+      );
+
+      assertTrue(testMsg, prevTag.isLessThan(currentTag));
+    }
+  }
 
   @Test
   public void addSingleTagNoPadding() {
