@@ -78,14 +78,14 @@ public enum RtTag {
   }
 
   /**
-   * @return The on-the-wire representation of this tag.
+   * @return The <b>unsigned</b> on-the-wire representation of this tag.
    */
   public int wireEncoding() {
     return wireEncoding;
   }
 
   /**
-   * @return The little-endian representation of this tag.
+   * @return The <b>unsigned</b> little-endian representation of this tag.
    */
   public int valueLE() {
     return valueLE;

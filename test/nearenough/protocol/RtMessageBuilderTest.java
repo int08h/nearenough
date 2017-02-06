@@ -57,22 +57,26 @@ public final class RtMessageBuilderTest {
     byte[] value = {6, 7, 8, 9};
 
     RtMessage msg = RtMessage.builder()
-        .add(RtTag.INDX, value)
+        .add(RtTag.NONC, value)
         .addPadding(true)
         .build();
 
     assertThat(msg.numTags(), equalTo(2));
-    assertArrayEquals(msg.get(RtTag.INDX), value);
+    assertArrayEquals(msg.get(RtTag.NONC), value);
 
     //  4 numTags
     //  4 single offset
-    //  8 two tags (PAD and INDX)
-    //  4 INDX value length
+    //  8 two tags (NONC and PAD)
+    //  4 NONC value length
     // --
     // 20 bytes
     //
     // 1024 - 20 = 1004 length of PAD value
     assertThat(msg.get(RtTag.PAD).length, equalTo(1004));
+
+    ArrayList<RtTag> tags = new ArrayList<>(msg.mapping().keySet());
+    assertThat(tags.get(0), equalTo(RtTag.NONC));
+    assertThat(tags.get(1), equalTo(RtTag.PAD));
   }
 
   @Test

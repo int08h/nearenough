@@ -13,7 +13,9 @@ import static nearenough.util.Preconditions.checkNotNull;
 
 public final class RtMessageBuilder {
 
-  private final Map<RtTag, byte[]> map = new TreeMap<>(Comparator.comparing(RtTag::valueLE));
+  private final Map<RtTag, byte[]> map = new TreeMap<>(
+      Comparator.comparing(RtTag::valueLE, Integer::compareUnsigned)
+  );
 
   private ByteBufAllocator allocator = ByteBufAllocator.DEFAULT;
   private boolean shouldAddPadding = false;
