@@ -75,6 +75,8 @@ public final class RtWire {
       buf.writeIntLE(offsetSum);
       offsetSum += iter.next().length;
     }
+
+    checkState(offsetSum >= 0);
   }
 
   private static void writeTags(RtMessage msg, ByteBuf buf) {

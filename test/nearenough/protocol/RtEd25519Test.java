@@ -1,6 +1,8 @@
 package nearenough.protocol;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static nearenough.util.BytesUtil.hexToBytes;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -8,6 +10,9 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
 public final class RtEd25519Test {
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
   @Test
   public void verifyEmptyMessageSignature() throws Exception {
@@ -64,4 +69,21 @@ public final class RtEd25519Test {
 
     assertTrue("signature validates", verifier.verify(signature));
   }
+
+  @Test
+  public void invalidSeedLengthThrows() throws Exception {
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("insufficient private key seed length");
+
+    new RtEd25519.Signer(new byte[1]);
+  }
+
+  @Test
+  public void invalidPublicKeyLengthThrows() throws Exception {
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("incorrect public key size");
+
+    new RtEd25519.Verifier(new byte[1]);
+  }
+
 }

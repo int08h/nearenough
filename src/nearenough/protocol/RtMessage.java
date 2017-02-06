@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static nearenough.util.Preconditions.checkNotNull;
+import static nearenough.util.Preconditions.checkState;
 
 /**
  * An immutable Roughtime protocol message.
@@ -95,7 +96,7 @@ public final class RtMessage {
     long readNumTags = msg.readUnsignedIntLE();
 
     // Spec says max # tags can be 2^32-1, but capping at 64k tags in this implementation
-    if (readNumTags < 0 || readNumTags > 0xffff) {
+    if (readNumTags > 0xffff) {
       throw new InvalidNumTagsException("invalid num_tags value " + readNumTags);
     }
 
@@ -159,10 +160,11 @@ public final class RtMessage {
       if ((offset % 4) != 0) {
         throw new TagOffsetUnalignedException("offset " + i + " not multiple of 4: " + offset);
       }
-      if (offset < 0 || offset > endOfPayload) {
+      if (offset > endOfPayload) {
         throw new TagOffsetOverflowException("offset " + i + " overflow: " + offset);
       }
 
+      checkState((int) offset >= 0, "impossible, negative offset");
       offsets[i + 1] = (int) offset;
     }
 

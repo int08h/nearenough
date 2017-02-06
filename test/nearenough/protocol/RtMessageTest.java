@@ -209,7 +209,6 @@ public final class RtMessageTest {
     } catch (TagOffsetOverflowException e) {
       assertThat(e.getMessage(), containsString("offset 0 overflow"));
     }
-
   }
 
   @Test

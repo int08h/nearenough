@@ -4,6 +4,7 @@ import nearenough.exceptions.MerkleTreeInvalid;
 import nearenough.exceptions.MidpointInvalid;
 import nearenough.exceptions.SignatureInvalid;
 import nearenough.protocol.RtConstants;
+import nearenough.protocol.RtHashing;
 import nearenough.protocol.RtMessage;
 import nearenough.protocol.RtTag;
 import org.junit.Rule;
@@ -52,11 +53,11 @@ public final class RoughtimeClientTest {
    *    }
    *    INDX(4) = 00000000
    *  }
-   * midpoint    : 2017-02-05T20:06:59.017Z (radius 1 sec)
+   * midpoint: 2017-02-05T20:06:59.017Z (radius 1 sec)
    *
    */
   private static final byte[] RESPONSE = hexToBytes(
-    //  0 1 2 3 4 5 6 7 8 9 a b c d e f
+      //0 1 2 3 4 5 6 7 8 9 a b c d e f
       "050000004000000040000000a4000000" + // 0000 ....@...@.......
       "3c010000534947005041544853524550" + // 0010 <...SIG.PATHSREP
       "43455254494e44588377ffb3f3ba0ccb" + // 0020 CERTINDX.w......
@@ -93,6 +94,33 @@ public final class RoughtimeClientTest {
     assertTrue(client.isResponseValid());
     assertThat(client.midpoint(), equalTo(1486325219017470L));
     assertThat(client.radius(), equalTo(1_000_000));
+  }
+
+  @Test
+  public void successfulMerkleTreeVerify() {
+    //     root =  hashNode
+    //             /      \
+    //   hashLeaf('a')     hashLeaf(NONCE)
+    //   index 0           index 1
+
+    RtHashing hasher = new RtHashing();
+
+    byte[] hashA = hasher.hashLeaf(new byte[]{'a'});
+    byte[] hashNonce = hasher.hashLeaf(NONCE);
+    byte[] root = hasher.hashNode(hashA, hashNonce);
+
+    RtMessage srepMsg = RtMessage.builder()
+        .add(RtTag.ROOT, root)
+        .build();
+
+    RtMessage responseMsg = RtMessage.builder()
+        .add(RtTag.INDX, new byte[]{0x01, 0x00, 0x00, 0x00}) // Client's nonce is at index 1
+        .add(RtTag.SREP, srepMsg)
+        .add(RtTag.PATH, hashA)
+        .build();
+
+    RoughtimeClient client = new RoughtimeClient(GOOGLE_PUBKEY, NONCE);
+    client.verifyNonceIncluded(responseMsg);
   }
 
   @Test
@@ -184,11 +212,6 @@ public final class RoughtimeClientTest {
     thrown.expect(MidpointInvalid.class);
     thrown.expectMessage("falls outside delegation bounds: midp=" + Long.MAX_VALUE);
     client.verifyMidpointBounds(srepMsg);
-  }
-
-  @Test
-  public void verifyDeepMerkleTree() {
-    // TODO(stuart)
   }
 
   @Test

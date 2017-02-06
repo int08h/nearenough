@@ -344,9 +344,18 @@ public final class RoughtimeClient {
   }
 
   /**
-   * Verify that the midpoint is within the delegation time bound; ergo (MINT <= MIDP <= MAXT)
+   * Verify that the delegation bounds are sane (MINT < MAXT) and the midpoint is within the
+   * delegation time bound (MINT <= MIDP <= MAXT)
    */
   private void validateMidpointBounds(long midp) {
+    if (Long.compareUnsigned(delegationMinT, delegationMaxT) >= 0) {
+      String message = String.format(
+          "Delegation bounds invalid (MINT >= MAXT): bounds=[%s, %s]",
+          Long.toUnsignedString(delegationMinT), Long.toUnsignedString(delegationMaxT)
+      );
+      throw new MidpointInvalid(message);
+    }
+
     boolean isBeforeMinT = Long.compareUnsigned(midp, delegationMinT) < 0;
     boolean isAfterMaxT = Long.compareUnsigned(midp, delegationMaxT) > 0;
 
@@ -356,7 +365,6 @@ public final class RoughtimeClient {
           Long.toUnsignedString(midp), Long.toUnsignedString(delegationMinT),
           Long.toUnsignedString(delegationMaxT)
       );
-
       throw new MidpointInvalid(message);
     }
   }

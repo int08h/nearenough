@@ -1,12 +1,12 @@
 package nearenough.protocol;
 
-import nearenough.third.eddsa.EdDSAEngine;
-import nearenough.third.eddsa.EdDSAPrivateKey;
-import nearenough.third.eddsa.EdDSAPublicKey;
-import nearenough.third.eddsa.spec.EdDSANamedCurveTable;
-import nearenough.third.eddsa.spec.EdDSAParameterSpec;
-import nearenough.third.eddsa.spec.EdDSAPrivateKeySpec;
-import nearenough.third.eddsa.spec.EdDSAPublicKeySpec;
+import net.i2p.crypto.eddsa.EdDSAEngine;
+import net.i2p.crypto.eddsa.EdDSAPrivateKey;
+import net.i2p.crypto.eddsa.EdDSAPublicKey;
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
+import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
+import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
+import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
 
 import java.security.InvalidKeyException;
 import java.security.PublicKey;
