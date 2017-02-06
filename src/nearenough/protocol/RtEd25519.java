@@ -1,5 +1,13 @@
 package nearenough.protocol;
 
+import static nearenough.protocol.RtConstants.MIN_SEED_LENGTH;
+import static nearenough.protocol.RtConstants.PUBKEY_LENGTH;
+import static nearenough.util.Preconditions.checkArgument;
+
+import java.security.InvalidKeyException;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
 import net.i2p.crypto.eddsa.EdDSAEngine;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
@@ -7,15 +15,6 @@ import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
-
-import java.security.InvalidKeyException;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.SignatureException;
-
-import static nearenough.protocol.RtConstants.MIN_SEED_LENGTH;
-import static nearenough.protocol.RtConstants.PUBKEY_LENGTH;
-import static nearenough.util.Preconditions.checkArgument;
 
 /**
  * Provides Ed25519 signing and verification.
@@ -38,8 +37,8 @@ public final class RtEd25519 {
      * Sign byte-strings using the private key derived from the provided <em>seed</em>.
      *
      * @param seedBytes A <em>seed</em> to create a private key. Not the actual private key. The
-     * seed will be transformed and expanded into an Ed25519 private key as described in
-     * <a href="https://tools.ietf.org/html/rfc8032#page-13">RFC 8032</a>.
+     * seed will be transformed and expanded into an Ed25519 private key as described in <a
+     * href="https://tools.ietf.org/html/rfc8032#page-13">RFC 8032</a>.
      */
     public Signer(byte[] seedBytes) throws InvalidKeyException, SignatureException {
       checkArgument(seedBytes.length >= MIN_SEED_LENGTH, "insufficient private key seed length");
@@ -119,7 +118,6 @@ public final class RtEd25519 {
      * via new calls to update and verify.
      *
      * @param signature byte[64] of Ed25519 signature
-     *
      * @return True if the signature is valid, false otherwise
      */
     public boolean verify(byte[] signature) throws SignatureException {

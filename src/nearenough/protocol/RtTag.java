@@ -1,13 +1,12 @@
 package nearenough.protocol;
 
+import static nearenough.util.Preconditions.checkNotNull;
+
 import io.netty.util.collection.IntObjectHashMap;
 import io.netty.util.collection.IntObjectMap;
-import nearenough.exceptions.InvalidTagException;
-
 import java.util.EnumSet;
 import java.util.Set;
-
-import static nearenough.util.Preconditions.checkNotNull;
+import nearenough.exceptions.InvalidTagException;
 
 /**
  * Roughtime protocol Tags.
@@ -46,7 +45,6 @@ public enum RtTag {
    * {@link InvalidTagException} if no mapping exists.
    *
    * @param tagValue unsigned 32-bit tag
-   *
    * @return the {@link RtTag} that corresponds to the value, or throws {@link InvalidTagException}
    * if no mapping exists.
    */

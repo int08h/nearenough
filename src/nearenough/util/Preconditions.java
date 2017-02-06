@@ -87,7 +87,9 @@ package nearenough.util;
  * @since 2.0
  */
 public final class Preconditions {
-  private Preconditions() {}
+
+  private Preconditions() {
+  }
 
   /**
    * Ensures the truth of an expression involving one or more parameters to the calling method.
@@ -106,10 +108,10 @@ public final class Preconditions {
    *
    * @param expression a boolean expression
    * @param errorMessage the exception message to use if the check fails; will be converted to a
-   *     string using {@link String#valueOf(Object)}
+   * string using {@link String#valueOf(Object)}
    * @throws IllegalArgumentException if {@code expression} is false
    */
-  public static void checkArgument(boolean expression,  Object errorMessage) {
+  public static void checkArgument(boolean expression, Object errorMessage) {
     if (!expression) {
       throw new IllegalArgumentException(String.valueOf(errorMessage));
     }
@@ -120,20 +122,20 @@ public final class Preconditions {
    *
    * @param expression a boolean expression
    * @param errorMessageTemplate a template for the exception message should the check fail. The
-   *     message is formed by replacing each {@code %s} placeholder in the template with an
-   *     argument. These are matched by position - the first {@code %s} gets {@code
-   *     errorMessageArgs[0]}, etc. Unmatched arguments will be appended to the formatted message in
-   *     square braces. Unmatched placeholders will be left as-is.
+   * message is formed by replacing each {@code %s} placeholder in the template with an argument.
+   * These are matched by position - the first {@code %s} gets {@code errorMessageArgs[0]}, etc.
+   * Unmatched arguments will be appended to the formatted message in square braces. Unmatched
+   * placeholders will be left as-is.
    * @param errorMessageArgs the arguments to be substituted into the message template. Arguments
-   *     are converted to strings using {@link String#valueOf(Object)}.
+   * are converted to strings using {@link String#valueOf(Object)}.
    * @throws IllegalArgumentException if {@code expression} is false
    * @throws NullPointerException if the check fails and either {@code errorMessageTemplate} or
-   *     {@code errorMessageArgs} is null (don't let this happen)
+   * {@code errorMessageArgs} is null (don't let this happen)
    */
   public static void checkArgument(
       boolean expression,
-       String errorMessageTemplate,
-       Object... errorMessageArgs) {
+      String errorMessageTemplate,
+      Object... errorMessageArgs) {
     if (!expression) {
       throw new IllegalArgumentException(format(errorMessageTemplate, errorMessageArgs));
     }
@@ -144,7 +146,7 @@ public final class Preconditions {
    *
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
-  public static void checkArgument(boolean b,  String errorMessageTemplate, char p1) {
+  public static void checkArgument(boolean b, String errorMessageTemplate, char p1) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1));
     }
@@ -155,7 +157,7 @@ public final class Preconditions {
    *
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
-  public static void checkArgument(boolean b,  String errorMessageTemplate, int p1) {
+  public static void checkArgument(boolean b, String errorMessageTemplate, int p1) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1));
     }
@@ -166,19 +168,7 @@ public final class Preconditions {
    *
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
-  public static void checkArgument(boolean b,  String errorMessageTemplate, long p1) {
-    if (!b) {
-      throw new IllegalArgumentException(format(errorMessageTemplate, p1));
-    }
-  }
-
-  /**
-   * Ensures the truth of an expression involving one or more parameters to the calling method.
-   *
-   * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
-   */
-  public static void checkArgument(
-      boolean b,  String errorMessageTemplate,  Object p1) {
+  public static void checkArgument(boolean b, String errorMessageTemplate, long p1) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1));
     }
@@ -190,7 +180,19 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate, char p1, char p2) {
+      boolean b, String errorMessageTemplate, Object p1) {
+    if (!b) {
+      throw new IllegalArgumentException(format(errorMessageTemplate, p1));
+    }
+  }
+
+  /**
+   * Ensures the truth of an expression involving one or more parameters to the calling method.
+   *
+   * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
+   */
+  public static void checkArgument(
+      boolean b, String errorMessageTemplate, char p1, char p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -202,7 +204,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate, char p1, int p2) {
+      boolean b, String errorMessageTemplate, char p1, int p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -214,7 +216,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate, char p1, long p2) {
+      boolean b, String errorMessageTemplate, char p1, long p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -226,7 +228,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate, char p1,  Object p2) {
+      boolean b, String errorMessageTemplate, char p1, Object p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -238,7 +240,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate, int p1, char p2) {
+      boolean b, String errorMessageTemplate, int p1, char p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -250,7 +252,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate, int p1, int p2) {
+      boolean b, String errorMessageTemplate, int p1, int p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -262,7 +264,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate, int p1, long p2) {
+      boolean b, String errorMessageTemplate, int p1, long p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -274,7 +276,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate, int p1,  Object p2) {
+      boolean b, String errorMessageTemplate, int p1, Object p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -286,7 +288,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate, long p1, char p2) {
+      boolean b, String errorMessageTemplate, long p1, char p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -298,7 +300,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate, long p1, int p2) {
+      boolean b, String errorMessageTemplate, long p1, int p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -310,7 +312,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate, long p1, long p2) {
+      boolean b, String errorMessageTemplate, long p1, long p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -322,7 +324,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate, long p1,  Object p2) {
+      boolean b, String errorMessageTemplate, long p1, Object p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -334,7 +336,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate,  Object p1, char p2) {
+      boolean b, String errorMessageTemplate, Object p1, char p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -346,7 +348,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate,  Object p1, int p2) {
+      boolean b, String errorMessageTemplate, Object p1, int p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -358,7 +360,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate,  Object p1, long p2) {
+      boolean b, String errorMessageTemplate, Object p1, long p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -370,7 +372,7 @@ public final class Preconditions {
    * <p>See {@link #checkArgument(boolean, String, Object...)} for details.
    */
   public static void checkArgument(
-      boolean b,  String errorMessageTemplate,  Object p1,  Object p2) {
+      boolean b, String errorMessageTemplate, Object p1, Object p2) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2));
     }
@@ -383,10 +385,10 @@ public final class Preconditions {
    */
   public static void checkArgument(
       boolean b,
-       String errorMessageTemplate,
-       Object p1,
-       Object p2,
-       Object p3) {
+      String errorMessageTemplate,
+      Object p1,
+      Object p2,
+      Object p3) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2, p3));
     }
@@ -399,11 +401,11 @@ public final class Preconditions {
    */
   public static void checkArgument(
       boolean b,
-       String errorMessageTemplate,
-       Object p1,
-       Object p2,
-       Object p3,
-       Object p4) {
+      String errorMessageTemplate,
+      Object p1,
+      Object p2,
+      Object p3,
+      Object p4) {
     if (!b) {
       throw new IllegalArgumentException(format(errorMessageTemplate, p1, p2, p3, p4));
     }
@@ -428,10 +430,10 @@ public final class Preconditions {
    *
    * @param expression a boolean expression
    * @param errorMessage the exception message to use if the check fails; will be converted to a
-   *     string using {@link String#valueOf(Object)}
+   * string using {@link String#valueOf(Object)}
    * @throws IllegalStateException if {@code expression} is false
    */
-  public static void checkState(boolean expression,  Object errorMessage) {
+  public static void checkState(boolean expression, Object errorMessage) {
     if (!expression) {
       throw new IllegalStateException(String.valueOf(errorMessage));
     }
@@ -443,20 +445,20 @@ public final class Preconditions {
    *
    * @param expression a boolean expression
    * @param errorMessageTemplate a template for the exception message should the check fail. The
-   *     message is formed by replacing each {@code %s} placeholder in the template with an
-   *     argument. These are matched by position - the first {@code %s} gets {@code
-   *     errorMessageArgs[0]}, etc. Unmatched arguments will be appended to the formatted message in
-   *     square braces. Unmatched placeholders will be left as-is.
+   * message is formed by replacing each {@code %s} placeholder in the template with an argument.
+   * These are matched by position - the first {@code %s} gets {@code errorMessageArgs[0]}, etc.
+   * Unmatched arguments will be appended to the formatted message in square braces. Unmatched
+   * placeholders will be left as-is.
    * @param errorMessageArgs the arguments to be substituted into the message template. Arguments
-   *     are converted to strings using {@link String#valueOf(Object)}.
+   * are converted to strings using {@link String#valueOf(Object)}.
    * @throws IllegalStateException if {@code expression} is false
    * @throws NullPointerException if the check fails and either {@code errorMessageTemplate} or
-   *     {@code errorMessageArgs} is null (don't let this happen)
+   * {@code errorMessageArgs} is null (don't let this happen)
    */
   public static void checkState(
       boolean expression,
-       String errorMessageTemplate,
-       Object... errorMessageArgs) {
+      String errorMessageTemplate,
+      Object... errorMessageArgs) {
     if (!expression) {
       throw new IllegalStateException(format(errorMessageTemplate, errorMessageArgs));
     }
@@ -468,7 +470,7 @@ public final class Preconditions {
    *
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
-  public static void checkState(boolean b,  String errorMessageTemplate, char p1) {
+  public static void checkState(boolean b, String errorMessageTemplate, char p1) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1));
     }
@@ -480,7 +482,7 @@ public final class Preconditions {
    *
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
-  public static void checkState(boolean b,  String errorMessageTemplate, int p1) {
+  public static void checkState(boolean b, String errorMessageTemplate, int p1) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1));
     }
@@ -492,20 +494,7 @@ public final class Preconditions {
    *
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
-  public static void checkState(boolean b,  String errorMessageTemplate, long p1) {
-    if (!b) {
-      throw new IllegalStateException(format(errorMessageTemplate, p1));
-    }
-  }
-
-  /**
-   * Ensures the truth of an expression involving the state of the calling instance, but not
-   * involving any parameters to the calling method.
-   *
-   * <p>See {@link #checkState(boolean, String, Object...)} for details.
-   */
-  public static void checkState(
-      boolean b,  String errorMessageTemplate,  Object p1) {
+  public static void checkState(boolean b, String errorMessageTemplate, long p1) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1));
     }
@@ -518,7 +507,20 @@ public final class Preconditions {
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
   public static void checkState(
-      boolean b,  String errorMessageTemplate, char p1, char p2) {
+      boolean b, String errorMessageTemplate, Object p1) {
+    if (!b) {
+      throw new IllegalStateException(format(errorMessageTemplate, p1));
+    }
+  }
+
+  /**
+   * Ensures the truth of an expression involving the state of the calling instance, but not
+   * involving any parameters to the calling method.
+   *
+   * <p>See {@link #checkState(boolean, String, Object...)} for details.
+   */
+  public static void checkState(
+      boolean b, String errorMessageTemplate, char p1, char p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -530,7 +532,7 @@ public final class Preconditions {
    *
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
-  public static void checkState(boolean b,  String errorMessageTemplate, char p1, int p2) {
+  public static void checkState(boolean b, String errorMessageTemplate, char p1, int p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -543,7 +545,7 @@ public final class Preconditions {
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
   public static void checkState(
-      boolean b,  String errorMessageTemplate, char p1, long p2) {
+      boolean b, String errorMessageTemplate, char p1, long p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -556,7 +558,7 @@ public final class Preconditions {
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
   public static void checkState(
-      boolean b,  String errorMessageTemplate, char p1,  Object p2) {
+      boolean b, String errorMessageTemplate, char p1, Object p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -568,7 +570,7 @@ public final class Preconditions {
    *
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
-  public static void checkState(boolean b,  String errorMessageTemplate, int p1, char p2) {
+  public static void checkState(boolean b, String errorMessageTemplate, int p1, char p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -580,7 +582,7 @@ public final class Preconditions {
    *
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
-  public static void checkState(boolean b,  String errorMessageTemplate, int p1, int p2) {
+  public static void checkState(boolean b, String errorMessageTemplate, int p1, int p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -592,20 +594,7 @@ public final class Preconditions {
    *
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
-  public static void checkState(boolean b,  String errorMessageTemplate, int p1, long p2) {
-    if (!b) {
-      throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
-    }
-  }
-
-  /**
-   * Ensures the truth of an expression involving the state of the calling instance, but not
-   * involving any parameters to the calling method.
-   *
-   * <p>See {@link #checkState(boolean, String, Object...)} for details.
-   */
-  public static void checkState(
-      boolean b,  String errorMessageTemplate, int p1,  Object p2) {
+  public static void checkState(boolean b, String errorMessageTemplate, int p1, long p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -618,19 +607,7 @@ public final class Preconditions {
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
   public static void checkState(
-      boolean b,  String errorMessageTemplate, long p1, char p2) {
-    if (!b) {
-      throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
-    }
-  }
-
-  /**
-   * Ensures the truth of an expression involving the state of the calling instance, but not
-   * involving any parameters to the calling method.
-   *
-   * <p>See {@link #checkState(boolean, String, Object...)} for details.
-   */
-  public static void checkState(boolean b,  String errorMessageTemplate, long p1, int p2) {
+      boolean b, String errorMessageTemplate, int p1, Object p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -643,7 +620,19 @@ public final class Preconditions {
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
   public static void checkState(
-      boolean b,  String errorMessageTemplate, long p1, long p2) {
+      boolean b, String errorMessageTemplate, long p1, char p2) {
+    if (!b) {
+      throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
+    }
+  }
+
+  /**
+   * Ensures the truth of an expression involving the state of the calling instance, but not
+   * involving any parameters to the calling method.
+   *
+   * <p>See {@link #checkState(boolean, String, Object...)} for details.
+   */
+  public static void checkState(boolean b, String errorMessageTemplate, long p1, int p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -656,7 +645,7 @@ public final class Preconditions {
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
   public static void checkState(
-      boolean b,  String errorMessageTemplate, long p1,  Object p2) {
+      boolean b, String errorMessageTemplate, long p1, long p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -669,7 +658,7 @@ public final class Preconditions {
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
   public static void checkState(
-      boolean b,  String errorMessageTemplate,  Object p1, char p2) {
+      boolean b, String errorMessageTemplate, long p1, Object p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -682,7 +671,7 @@ public final class Preconditions {
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
   public static void checkState(
-      boolean b,  String errorMessageTemplate,  Object p1, int p2) {
+      boolean b, String errorMessageTemplate, Object p1, char p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -695,7 +684,7 @@ public final class Preconditions {
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
   public static void checkState(
-      boolean b,  String errorMessageTemplate,  Object p1, long p2) {
+      boolean b, String errorMessageTemplate, Object p1, int p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -708,7 +697,20 @@ public final class Preconditions {
    * <p>See {@link #checkState(boolean, String, Object...)} for details.
    */
   public static void checkState(
-      boolean b,  String errorMessageTemplate,  Object p1,  Object p2) {
+      boolean b, String errorMessageTemplate, Object p1, long p2) {
+    if (!b) {
+      throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
+    }
+  }
+
+  /**
+   * Ensures the truth of an expression involving the state of the calling instance, but not
+   * involving any parameters to the calling method.
+   *
+   * <p>See {@link #checkState(boolean, String, Object...)} for details.
+   */
+  public static void checkState(
+      boolean b, String errorMessageTemplate, Object p1, Object p2) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2));
     }
@@ -722,10 +724,10 @@ public final class Preconditions {
    */
   public static void checkState(
       boolean b,
-       String errorMessageTemplate,
-       Object p1,
-       Object p2,
-       Object p3) {
+      String errorMessageTemplate,
+      Object p1,
+      Object p2,
+      Object p3) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2, p3));
     }
@@ -739,11 +741,11 @@ public final class Preconditions {
    */
   public static void checkState(
       boolean b,
-       String errorMessageTemplate,
-       Object p1,
-       Object p2,
-       Object p3,
-       Object p4) {
+      String errorMessageTemplate,
+      Object p1,
+      Object p2,
+      Object p3,
+      Object p4) {
     if (!b) {
       throw new IllegalStateException(format(errorMessageTemplate, p1, p2, p3, p4));
     }
@@ -769,12 +771,12 @@ public final class Preconditions {
    *
    * @param reference an object reference
    * @param errorMessage the exception message to use if the check fails; will be converted to a
-   *     string using {@link String#valueOf(Object)}
+   * string using {@link String#valueOf(Object)}
    * @return the non-null reference that was validated
    * @throws NullPointerException if {@code reference} is null
    */
 
-  public static <T> T checkNotNull(T reference,  Object errorMessage) {
+  public static <T> T checkNotNull(T reference, Object errorMessage) {
     if (reference == null) {
       throw new NullPointerException(String.valueOf(errorMessage));
     }
@@ -786,18 +788,18 @@ public final class Preconditions {
    *
    * @param reference an object reference
    * @param errorMessageTemplate a template for the exception message should the check fail. The
-   *     message is formed by replacing each {@code %s} placeholder in the template with an
-   *     argument. These are matched by position - the first {@code %s} gets {@code
-   *     errorMessageArgs[0]}, etc. Unmatched arguments will be appended to the formatted message in
-   *     square braces. Unmatched placeholders will be left as-is.
+   * message is formed by replacing each {@code %s} placeholder in the template with an argument.
+   * These are matched by position - the first {@code %s} gets {@code errorMessageArgs[0]}, etc.
+   * Unmatched arguments will be appended to the formatted message in square braces. Unmatched
+   * placeholders will be left as-is.
    * @param errorMessageArgs the arguments to be substituted into the message template. Arguments
-   *     are converted to strings using {@link String#valueOf(Object)}.
+   * are converted to strings using {@link String#valueOf(Object)}.
    * @return the non-null reference that was validated
    * @throws NullPointerException if {@code reference} is null
    */
 
   public static <T> T checkNotNull(
-      T reference,  String errorMessageTemplate,  Object... errorMessageArgs) {
+      T reference, String errorMessageTemplate, Object... errorMessageArgs) {
     if (reference == null) {
       // If either of these parameters is null, the right thing happens anyway
       throw new NullPointerException(format(errorMessageTemplate, errorMessageArgs));
@@ -811,7 +813,7 @@ public final class Preconditions {
    * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
    */
 
-  public static <T> T checkNotNull(T obj,  String errorMessageTemplate, char p1) {
+  public static <T> T checkNotNull(T obj, String errorMessageTemplate, char p1) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1));
     }
@@ -824,7 +826,7 @@ public final class Preconditions {
    * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
    */
 
-  public static <T> T checkNotNull(T obj,  String errorMessageTemplate, int p1) {
+  public static <T> T checkNotNull(T obj, String errorMessageTemplate, int p1) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1));
     }
@@ -837,7 +839,7 @@ public final class Preconditions {
    * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
    */
 
-  public static <T> T checkNotNull(T obj,  String errorMessageTemplate, long p1) {
+  public static <T> T checkNotNull(T obj, String errorMessageTemplate, long p1) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1));
     }
@@ -851,7 +853,7 @@ public final class Preconditions {
    */
 
   public static <T> T checkNotNull(
-      T obj,  String errorMessageTemplate,  Object p1) {
+      T obj, String errorMessageTemplate, Object p1) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1));
     }
@@ -864,7 +866,7 @@ public final class Preconditions {
    * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
    */
 
-  public static <T> T checkNotNull(T obj,  String errorMessageTemplate, char p1, char p2) {
+  public static <T> T checkNotNull(T obj, String errorMessageTemplate, char p1, char p2) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1, p2));
     }
@@ -877,7 +879,7 @@ public final class Preconditions {
    * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
    */
 
-  public static <T> T checkNotNull(T obj,  String errorMessageTemplate, char p1, int p2) {
+  public static <T> T checkNotNull(T obj, String errorMessageTemplate, char p1, int p2) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1, p2));
     }
@@ -890,60 +892,7 @@ public final class Preconditions {
    * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
    */
 
-  public static <T> T checkNotNull(T obj,  String errorMessageTemplate, char p1, long p2) {
-    if (obj == null) {
-      throw new NullPointerException(format(errorMessageTemplate, p1, p2));
-    }
-    return obj;
-  }
-
-  /**
-   * Ensures that an object reference passed as a parameter to the calling method is not null.
-   *
-   * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
-   */
-
-  public static <T> T checkNotNull(
-      T obj,  String errorMessageTemplate, char p1,  Object p2) {
-    if (obj == null) {
-      throw new NullPointerException(format(errorMessageTemplate, p1, p2));
-    }
-    return obj;
-  }
-
-  /**
-   * Ensures that an object reference passed as a parameter to the calling method is not null.
-   *
-   * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
-   */
-
-  public static <T> T checkNotNull(T obj,  String errorMessageTemplate, int p1, char p2) {
-    if (obj == null) {
-      throw new NullPointerException(format(errorMessageTemplate, p1, p2));
-    }
-    return obj;
-  }
-
-  /**
-   * Ensures that an object reference passed as a parameter to the calling method is not null.
-   *
-   * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
-   */
-
-  public static <T> T checkNotNull(T obj,  String errorMessageTemplate, int p1, int p2) {
-    if (obj == null) {
-      throw new NullPointerException(format(errorMessageTemplate, p1, p2));
-    }
-    return obj;
-  }
-
-  /**
-   * Ensures that an object reference passed as a parameter to the calling method is not null.
-   *
-   * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
-   */
-
-  public static <T> T checkNotNull(T obj,  String errorMessageTemplate, int p1, long p2) {
+  public static <T> T checkNotNull(T obj, String errorMessageTemplate, char p1, long p2) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1, p2));
     }
@@ -957,7 +906,7 @@ public final class Preconditions {
    */
 
   public static <T> T checkNotNull(
-      T obj,  String errorMessageTemplate, int p1,  Object p2) {
+      T obj, String errorMessageTemplate, char p1, Object p2) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1, p2));
     }
@@ -970,7 +919,7 @@ public final class Preconditions {
    * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
    */
 
-  public static <T> T checkNotNull(T obj,  String errorMessageTemplate, long p1, char p2) {
+  public static <T> T checkNotNull(T obj, String errorMessageTemplate, int p1, char p2) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1, p2));
     }
@@ -983,7 +932,7 @@ public final class Preconditions {
    * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
    */
 
-  public static <T> T checkNotNull(T obj,  String errorMessageTemplate, long p1, int p2) {
+  public static <T> T checkNotNull(T obj, String errorMessageTemplate, int p1, int p2) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1, p2));
     }
@@ -996,21 +945,7 @@ public final class Preconditions {
    * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
    */
 
-  public static <T> T checkNotNull(T obj,  String errorMessageTemplate, long p1, long p2) {
-    if (obj == null) {
-      throw new NullPointerException(format(errorMessageTemplate, p1, p2));
-    }
-    return obj;
-  }
-
-  /**
-   * Ensures that an object reference passed as a parameter to the calling method is not null.
-   *
-   * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
-   */
-
-  public static <T> T checkNotNull(
-      T obj,  String errorMessageTemplate, long p1,  Object p2) {
+  public static <T> T checkNotNull(T obj, String errorMessageTemplate, int p1, long p2) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1, p2));
     }
@@ -1024,7 +959,46 @@ public final class Preconditions {
    */
 
   public static <T> T checkNotNull(
-      T obj,  String errorMessageTemplate,  Object p1, char p2) {
+      T obj, String errorMessageTemplate, int p1, Object p2) {
+    if (obj == null) {
+      throw new NullPointerException(format(errorMessageTemplate, p1, p2));
+    }
+    return obj;
+  }
+
+  /**
+   * Ensures that an object reference passed as a parameter to the calling method is not null.
+   *
+   * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
+   */
+
+  public static <T> T checkNotNull(T obj, String errorMessageTemplate, long p1, char p2) {
+    if (obj == null) {
+      throw new NullPointerException(format(errorMessageTemplate, p1, p2));
+    }
+    return obj;
+  }
+
+  /**
+   * Ensures that an object reference passed as a parameter to the calling method is not null.
+   *
+   * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
+   */
+
+  public static <T> T checkNotNull(T obj, String errorMessageTemplate, long p1, int p2) {
+    if (obj == null) {
+      throw new NullPointerException(format(errorMessageTemplate, p1, p2));
+    }
+    return obj;
+  }
+
+  /**
+   * Ensures that an object reference passed as a parameter to the calling method is not null.
+   *
+   * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
+   */
+
+  public static <T> T checkNotNull(T obj, String errorMessageTemplate, long p1, long p2) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1, p2));
     }
@@ -1038,7 +1012,7 @@ public final class Preconditions {
    */
 
   public static <T> T checkNotNull(
-      T obj,  String errorMessageTemplate,  Object p1, int p2) {
+      T obj, String errorMessageTemplate, long p1, Object p2) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1, p2));
     }
@@ -1052,7 +1026,7 @@ public final class Preconditions {
    */
 
   public static <T> T checkNotNull(
-      T obj,  String errorMessageTemplate,  Object p1, long p2) {
+      T obj, String errorMessageTemplate, Object p1, char p2) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1, p2));
     }
@@ -1066,7 +1040,35 @@ public final class Preconditions {
    */
 
   public static <T> T checkNotNull(
-      T obj,  String errorMessageTemplate,  Object p1,  Object p2) {
+      T obj, String errorMessageTemplate, Object p1, int p2) {
+    if (obj == null) {
+      throw new NullPointerException(format(errorMessageTemplate, p1, p2));
+    }
+    return obj;
+  }
+
+  /**
+   * Ensures that an object reference passed as a parameter to the calling method is not null.
+   *
+   * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
+   */
+
+  public static <T> T checkNotNull(
+      T obj, String errorMessageTemplate, Object p1, long p2) {
+    if (obj == null) {
+      throw new NullPointerException(format(errorMessageTemplate, p1, p2));
+    }
+    return obj;
+  }
+
+  /**
+   * Ensures that an object reference passed as a parameter to the calling method is not null.
+   *
+   * <p>See {@link #checkNotNull(Object, String, Object...)} for details.
+   */
+
+  public static <T> T checkNotNull(
+      T obj, String errorMessageTemplate, Object p1, Object p2) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1, p2));
     }
@@ -1081,10 +1083,10 @@ public final class Preconditions {
 
   public static <T> T checkNotNull(
       T obj,
-       String errorMessageTemplate,
-       Object p1,
-       Object p2,
-       Object p3) {
+      String errorMessageTemplate,
+      Object p1,
+      Object p2,
+      Object p3) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1, p2, p3));
     }
@@ -1099,11 +1101,11 @@ public final class Preconditions {
 
   public static <T> T checkNotNull(
       T obj,
-       String errorMessageTemplate,
-       Object p1,
-       Object p2,
-       Object p3,
-       Object p4) {
+      String errorMessageTemplate,
+      Object p1,
+      Object p2,
+      Object p3,
+      Object p4) {
     if (obj == null) {
       throw new NullPointerException(format(errorMessageTemplate, p1, p2, p3, p4));
     }
@@ -1143,7 +1145,8 @@ public final class Preconditions {
    * @param index a user-supplied index identifying an element of an array, list or string
    * @param size the size of that array, list or string
    * @return the value of {@code index}
-   * @throws IndexOutOfBoundsException if {@code index} is negative or is not less than {@code size}
+   * @throws IndexOutOfBoundsException if {@code index} is negative or is not less than {@code
+   * size}
    * @throws IllegalArgumentException if {@code size} is negative
    */
 
@@ -1159,11 +1162,12 @@ public final class Preconditions {
    * @param size the size of that array, list or string
    * @param desc the text to use to describe this index in an error message
    * @return the value of {@code index}
-   * @throws IndexOutOfBoundsException if {@code index} is negative or is not less than {@code size}
+   * @throws IndexOutOfBoundsException if {@code index} is negative or is not less than {@code
+   * size}
    * @throws IllegalArgumentException if {@code size} is negative
    */
 
-  public static int checkElementIndex(int index, int size,  String desc) {
+  public static int checkElementIndex(int index, int size, String desc) {
     // Carefully optimized for execution by hotspot (explanatory comment above)
     if (index < 0 || index >= size) {
       throw new IndexOutOfBoundsException(badElementIndex(index, size, desc));
@@ -1208,7 +1212,7 @@ public final class Preconditions {
    * @throws IllegalArgumentException if {@code size} is negative
    */
 
-  public static int checkPositionIndex(int index, int size,  String desc) {
+  public static int checkPositionIndex(int index, int size, String desc) {
     // Carefully optimized for execution by hotspot (explanatory comment above)
     if (index < 0 || index > size) {
       throw new IndexOutOfBoundsException(badPositionIndex(index, size, desc));
@@ -1235,7 +1239,7 @@ public final class Preconditions {
    * @param end a user-supplied index identifying a ending position in an array, list or string
    * @param size the size of that array, list or string
    * @throws IndexOutOfBoundsException if either index is negative or is greater than {@code size},
-   *     or if {@code end} is less than {@code start}
+   * or if {@code end} is less than {@code start}
    * @throws IllegalArgumentException if {@code size} is negative
    */
   public static void checkPositionIndexes(int start, int end, int size) {
@@ -1264,10 +1268,10 @@ public final class Preconditions {
    *
    * @param template a non-null string containing 0 or more {@code %s} placeholders.
    * @param args the arguments to be substituted into the message template. Arguments are converted
-   *     to strings using {@link String#valueOf(Object)}. Arguments can be null.
+   * to strings using {@link String#valueOf(Object)}. Arguments can be null.
    */
   // Note that this is somewhat-improperly used from Verify.java as well.
-  static String format(String template,  Object... args) {
+  static String format(String template, Object... args) {
     template = String.valueOf(template); // null -> "null"
 
     // start substituting the arguments into the '%s' placeholders

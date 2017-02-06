@@ -1,5 +1,8 @@
 package nearenough.util;
 
+import static nearenough.util.BytesUtil.bytesToHex;
+import static nearenough.util.BytesUtil.hexToBytes;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
@@ -9,16 +12,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import nearenough.client.RoughtimeClient;
-import nearenough.protocol.RtMessage;
-import nearenough.protocol.RtWire;
-
 import java.net.InetSocketAddress;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-
-import static nearenough.util.BytesUtil.bytesToHex;
-import static nearenough.util.BytesUtil.hexToBytes;
+import nearenough.client.RoughtimeClient;
+import nearenough.protocol.RtMessage;
+import nearenough.protocol.RtWire;
 
 /**
  * Send a one-off request to the given Roughtime server and dump the response (if any)

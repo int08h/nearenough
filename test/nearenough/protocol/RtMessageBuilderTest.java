@@ -1,16 +1,15 @@
 package nearenough.protocol;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import org.junit.Test;
 
 public final class RtMessageBuilderTest {
 

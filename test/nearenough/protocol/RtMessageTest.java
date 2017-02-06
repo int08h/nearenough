@@ -1,17 +1,22 @@
 package nearenough.protocol;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import nearenough.exceptions.*;
-import org.junit.Test;
-
-import java.nio.charset.StandardCharsets;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import java.nio.charset.StandardCharsets;
+import nearenough.exceptions.InvalidNumTagsException;
+import nearenough.exceptions.InvalidTagException;
+import nearenough.exceptions.MessageTooShortException;
+import nearenough.exceptions.MessageUnalignedException;
+import nearenough.exceptions.TagOffsetOverflowException;
+import nearenough.exceptions.TagOffsetUnalignedException;
+import nearenough.exceptions.TagsNotIncreasingException;
+import org.junit.Test;
 
 public final class RtMessageTest {
 
@@ -31,8 +36,8 @@ public final class RtMessageTest {
   public void parseSingleTagMessage() {
     ByteBuf validSingleTag = makeBuf(
         (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, // 1 tag
-                                                            // no offsets
-        (byte) 'C',  (byte) 'E',  (byte) 'R',  (byte) 'T',  // CERT tag
+        // no offsets
+        (byte) 'C', (byte) 'E', (byte) 'R', (byte) 'T',  // CERT tag
         (byte) 0x50, (byte) 0x50, (byte) 0x50, (byte) 0x50  // value 0x50505050
     );
 
@@ -49,9 +54,9 @@ public final class RtMessageTest {
         (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x00,  // 3 tags
         (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00,  // tag #2 has offset 4
         (byte) 0x08, (byte) 0x00, (byte) 0x00, (byte) 0x00,  // tag #3 has offset 8
-        (byte) 'D',  (byte) 'E',  (byte) 'L',  (byte) 'E',   // DELE
-        (byte) 'I',  (byte) 'N',  (byte) 'D',  (byte) 'X',   // INDX
-        (byte) 'P',  (byte) 'A',  (byte) 'D',  (byte) 0xff,  // PAD
+        (byte) 'D', (byte) 'E', (byte) 'L', (byte) 'E',   // DELE
+        (byte) 'I', (byte) 'N', (byte) 'D', (byte) 'X',   // INDX
+        (byte) 'P', (byte) 'A', (byte) 'D', (byte) 0xff,  // PAD
         (byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x11,  // data for DELE
         (byte) 0x22, (byte) 0x22, (byte) 0x22, (byte) 0x22,  // data for INDX
         (byte) 0x33, (byte) 0x33, (byte) 0x33, (byte) 0x33   // data for PAD
@@ -74,8 +79,8 @@ public final class RtMessageTest {
   public void parseStringValue() {
     byte[] headerPart = new byte[]{
         (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00, // 1 tag
-                                                            // no offsets
-        (byte) 'C',  (byte) 'E',  (byte) 'R',  (byte) 'T'   // CERT
+        // no offsets
+        (byte) 'C', (byte) 'E', (byte) 'R', (byte) 'T'   // CERT
     };
 
     String origValue = "Roughtime is a project that aims to provide secure time synchronization.";
@@ -216,8 +221,8 @@ public final class RtMessageTest {
     ByteBuf invalidTagsNotIncreasing = makeBuf(
         (byte) 0x02, (byte) 0x00, (byte) 0x00, (byte) 0x00,  // 2 tags
         (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00,  // tag #2 has offset 4
-        (byte) 'I',  (byte) 'N',  (byte) 'D',  (byte) 'X',   // INDX
-        (byte) 'D',  (byte) 'E',  (byte) 'L',  (byte) 'E',   // DELE *decreased*
+        (byte) 'I', (byte) 'N', (byte) 'D', (byte) 'X',   // INDX
+        (byte) 'D', (byte) 'E', (byte) 'L', (byte) 'E',   // DELE *decreased*
         (byte) 0x50, (byte) 0x50, (byte) 0x50, (byte) 0x50,  // value 0x50505050
         (byte) 0x60, (byte) 0x60, (byte) 0x60, (byte) 0x60   // value 0x60606060
     );

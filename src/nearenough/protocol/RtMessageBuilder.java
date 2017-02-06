@@ -1,15 +1,14 @@
 package nearenough.protocol;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
-
 import static nearenough.protocol.RtConstants.MIN_REQUEST_LENGTH;
 import static nearenough.util.Preconditions.checkArgument;
 import static nearenough.util.Preconditions.checkNotNull;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
 
 public final class RtMessageBuilder {
 

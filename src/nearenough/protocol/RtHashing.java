@@ -1,9 +1,9 @@
 package nearenough.protocol;
 
+import static nearenough.util.Preconditions.checkNotNull;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import static nearenough.util.Preconditions.checkNotNull;
 
 public final class RtHashing {
 

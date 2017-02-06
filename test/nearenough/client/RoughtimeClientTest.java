@@ -1,5 +1,15 @@
 package nearenough.client;
 
+import static nearenough.util.BytesUtil.hexToBytes;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 import nearenough.exceptions.MerkleTreeInvalid;
 import nearenough.exceptions.MidpointInvalid;
 import nearenough.exceptions.SignatureInvalid;
@@ -10,15 +20,6 @@ import nearenough.protocol.RtTag;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import java.util.Arrays;
-
-import static nearenough.util.BytesUtil.hexToBytes;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.*;
 
 public final class RoughtimeClientTest {
 
@@ -204,7 +205,7 @@ public final class RoughtimeClientTest {
             new byte[]{
                 (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
                 (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x7f
-        })
+            })
         .build();
 
     RtMessage srepMsg = RtMessage.builder().add(RtTag.SREP, msg).build();

@@ -1,5 +1,19 @@
 package nearenough.client;
 
+import static nearenough.protocol.RtConstants.CERTIFICATE_CONTEXT;
+import static nearenough.protocol.RtConstants.NONCE_LENGTH;
+import static nearenough.protocol.RtConstants.PUBKEY_LENGTH;
+import static nearenough.protocol.RtConstants.SIGNATURE_LENGTH;
+import static nearenough.protocol.RtConstants.SIGNED_RESPONSE_CONTEXT;
+import static nearenough.util.Preconditions.checkArgument;
+import static nearenough.util.Preconditions.checkNotNull;
+import static nearenough.util.Preconditions.checkState;
+
+import java.security.InvalidKeyException;
+import java.security.SecureRandom;
+import java.security.SignatureException;
+import java.util.Arrays;
+import java.util.Random;
 import nearenough.exceptions.InvalidRoughTimeMessage;
 import nearenough.exceptions.MerkleTreeInvalid;
 import nearenough.exceptions.MidpointInvalid;
@@ -10,25 +24,16 @@ import nearenough.protocol.RtMessage;
 import nearenough.protocol.RtTag;
 import nearenough.util.BytesUtil;
 
-import java.security.InvalidKeyException;
-import java.security.SecureRandom;
-import java.security.SignatureException;
-import java.util.Arrays;
-import java.util.Random;
-
-import static nearenough.protocol.RtConstants.*;
-import static nearenough.util.Preconditions.*;
-
 /**
  * Creates RoughTime client requests and processes server responses.
  * <p>
  * The high-level API consists of:
  * <ul>
- *   <li>{@link #createRequest()} - Constructs a RoughTime client request</li>
- *   <li>{@link #processResponse(RtMessage)} - Validates the server's response</li>
- *   <li>{@link #isResponseValid()} - Indicates if the response passed validation</li>
- *   <li>{@link #midpoint()} and {@link #radius()} - Returns the server's provided time value
- *   (midpoint) and uncertainty (radius) if the response was valid</li>
+ * <li>{@link #createRequest()} - Constructs a RoughTime client request</li>
+ * <li>{@link #processResponse(RtMessage)} - Validates the server's response</li>
+ * <li>{@link #isResponseValid()} - Indicates if the response passed validation</li>
+ * <li>{@link #midpoint()} and {@link #radius()} - Returns the server's provided time value
+ * (midpoint) and uncertainty (radius) if the response was valid</li>
  * </ul>
  *
  * Typical client code will use {@link RoughtimeClient} similar to this:
@@ -120,16 +125,16 @@ public final class RoughtimeClient {
   }
 
   /**
-   * @return The midpoint of the response if the response is valid ({@link #isResponseValid}
-   * returns {@code true}), otherwise returns zero (0).
+   * @return The midpoint of the response if the response is valid ({@link #isResponseValid} returns
+   * {@code true}), otherwise returns zero (0).
    */
   public long midpoint() {
     return isResponseValid ? midpoint : 0;
   }
 
   /**
-   * @return The radius of the response if the response is valid ({@link #isResponseValid}
-   * returns {@code true}), otherwise returns zero (0).
+   * @return The radius of the response if the response is valid ({@link #isResponseValid} returns
+   * {@code true}), otherwise returns zero (0).
    */
   public int radius() {
     return isResponseValid ? radius : 0;
@@ -143,9 +148,9 @@ public final class RoughtimeClient {
   }
 
   /**
-   * @return If the response is invalid ({@link #isResponseValid} returns {@code false}), the
-   * {@link InvalidRoughTimeMessage exception} associated with the failure of the response to
-   * validate, or {@code null} if the message is valid.
+   * @return If the response is invalid ({@link #isResponseValid} returns {@code false}), the {@link
+   * InvalidRoughTimeMessage exception} associated with the failure of the response to validate, or
+   * {@code null} if the message is valid.
    */
   public InvalidRoughTimeMessage invalidResponseCause() {
     return isResponseValid ? null : invalidResponseCause;
@@ -167,10 +172,10 @@ public final class RoughtimeClient {
   /**
    * Validate the server's response:
    * <ol>
-   *   <li>Verify signature of the delegation (DELE) certificate</li>
-   *   <li>Verify top-level signature of the signed-response (SREP) using the delegated key</li>
-   *   <li>Verify the request's nonce (NONC) is included in the response's Merkle tree.</li>
-   *   <li>Verify the midpoint (MIDP) lies within the delegation time bounds (MINT, MAXT).</li>
+   * <li>Verify signature of the delegation (DELE) certificate</li>
+   * <li>Verify top-level signature of the signed-response (SREP) using the delegated key</li>
+   * <li>Verify the request's nonce (NONC) is included in the response's Merkle tree.</li>
+   * <li>Verify the midpoint (MIDP) lies within the delegation time bounds (MINT, MAXT).</li>
    * </ol>
    *
    * @param response Response from the Roughtime server
@@ -193,7 +198,6 @@ public final class RoughtimeClient {
    * invalid.
    *
    * @param responseMsg The response {@link RtMessage} reply from the Roughtime server.
-   *
    * @throws SignatureInvalid The signature doesn't verify or is otherwise invalid
    */
   public void verifyDelegatedKey(RtMessage responseMsg) throws SignatureInvalid {
@@ -213,7 +217,6 @@ public final class RoughtimeClient {
    * Verify the top-level signature (SIG) on the signed-response (SREP) by the delegated key.
    *
    * @param responseMsg The response {@link RtMessage} reply from the Roughtime server.
-   *
    * @throws SignatureInvalid The signature doesn't verify or is otherwise invalid
    */
   public void verifyTopLevelSignature(RtMessage responseMsg) throws SignatureInvalid {
@@ -228,7 +231,6 @@ public final class RoughtimeClient {
    * Verify that this instance's nonce is included in the response's Merkle tree
    *
    * @param responseMsg The response {@link RtMessage} reply from the Roughtime server.
-   *
    * @throws MerkleTreeInvalid if the repsonse does not include this instance's nonce or the
    * response's Merkle tree is invalid in some other way
    */
@@ -247,7 +249,6 @@ public final class RoughtimeClient {
    * Verify that the repsonse's midpoint (MIDP) is within the time bounds of the delegated key.
    *
    * @param responseMsg The response {@link RtMessage} reply from the Roughtime server.
-   *
    * @throws MidpointInvalid if the response's midpoint falls outside the DELE time bounds
    */
   public void verifyMidpointBounds(RtMessage responseMsg) throws MidpointInvalid {

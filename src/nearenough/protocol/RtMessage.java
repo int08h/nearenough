@@ -1,25 +1,29 @@
 package nearenough.protocol;
 
+import static nearenough.util.Preconditions.checkNotNull;
+import static nearenough.util.Preconditions.checkState;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
-import nearenough.exceptions.*;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static nearenough.util.Preconditions.checkNotNull;
-import static nearenough.util.Preconditions.checkState;
+import nearenough.exceptions.InvalidNumTagsException;
+import nearenough.exceptions.MessageTooShortException;
+import nearenough.exceptions.MessageUnalignedException;
+import nearenough.exceptions.TagOffsetOverflowException;
+import nearenough.exceptions.TagOffsetUnalignedException;
+import nearenough.exceptions.TagsNotIncreasingException;
 
 /**
  * An immutable Roughtime protocol message.
  * <p>
  * Roughtime messages are a map of uint32's to arbitrary byte-strings.
  *
- * @see <a href="https://roughtime.googlesource.com/roughtime">Roughtime project site</a> for
- * the specification and more details.
+ * @see <a href="https://roughtime.googlesource.com/roughtime">Roughtime project site</a> for the
+ * specification and more details.
  */
 public final class RtMessage {
 

@@ -1,16 +1,15 @@
 package nearenough.protocol;
 
-import io.netty.buffer.ByteBuf;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertArrayEquals;
 
+import io.netty.buffer.ByteBuf;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertArrayEquals;
+import org.junit.Test;
 
 public final class RtWireTest {
 

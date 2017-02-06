@@ -1,13 +1,12 @@
 package nearenough.protocol;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-
-import java.util.Iterator;
-import java.util.Map;
-
 import static nearenough.util.Preconditions.checkNotNull;
 import static nearenough.util.Preconditions.checkState;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Encodes/decodes {@link RtMessage Roughtime messages} and fields to/from their on-the-wire format.
@@ -92,6 +91,7 @@ public final class RtWire {
   }
 
   // Utility class
-  private RtWire() {}
+  private RtWire() {
+  }
 
 }

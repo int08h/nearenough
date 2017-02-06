@@ -7,6 +7,7 @@ public final class BytesUtil {
 
   /**
    * Converts a hex string to bytes.
+   *
    * @param s the hex string to be converted.
    * @return the byte[]
    */
@@ -15,13 +16,14 @@ public final class BytesUtil {
     byte[] data = new byte[len / 2];
     for (int i = 0; i < len; i += 2) {
       data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-          + Character.digit(s.charAt(i+1), 16));
+          + Character.digit(s.charAt(i + 1), 16));
     }
     return data;
   }
 
   /**
    * Converts bytes to a hex string.
+   *
    * @param raw the byte[] to be converted.
    * @return the hex representation as a string.
    */
