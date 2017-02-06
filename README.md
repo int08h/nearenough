@@ -17,7 +17,14 @@ Nearenough bundles all required dependencies in the `lib` directory. Add those `
 your IDE's project classpath. Building is IDE-only for the moment. 
 
 ## Client Quickstart
-How to query a Roughtime server for its midpoint (the server's time):
+
+### Client Examples
+See [NioClient.java](../src/examples/NioClient.java) and 
+[NettyClient.java](../src/examples/NettyClient.java) for examples of sending a request to a 
+Roughtime server and processing the response.
+
+### DIY Client
+If implementing your own client, the general idea is:
 
 ```java
 // The RoughTime server's long term public key, must be obtained a priori
