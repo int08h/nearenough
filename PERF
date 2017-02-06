@@ -1,6 +1,0 @@
-Potential optimizations to consider
-
-* Extract from fastutil or other primitive collection replacements for LinkedHashMap and TreeMap.
-* Unify byte[] vs ByteBuf. Exclusively using ByteBuf could potentially eliminate copies?
-* Overall garbage generation reduction.
-

@@ -13,6 +13,11 @@ Features and changes under consideration. Not necessarily in order.
   can't ignore Maven's defacto status as _the_ Java build tool; having a pom will ease integration
   for many potential users.
 
+* Potential optimizations to consider:
+  - Extract from fastutil or other primitive collection replacements for LinkedHashMap and TreeMap.
+  - Unify byte[] vs ByteBuf. Exclusively using ByteBuf could potentially eliminate copies?
+  - Overall garbage generation reduction.
+
 Non-features, will not be implemented:
 
 * Logging in the client and protocol. I have little desire to wade into the tire fire that is Java
