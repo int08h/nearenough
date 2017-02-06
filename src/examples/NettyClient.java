@@ -13,20 +13,21 @@
  * limitations under the License.
  */
 
-package nearenough.util;
+package examples;
 
-import static nearenough.util.BytesUtil.bytesToHex;
 import static nearenough.util.BytesUtil.hexToBytes;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInitializer;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.handler.timeout.ReadTimeoutException;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 import java.net.InetSocketAddress;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
@@ -35,11 +36,16 @@ import nearenough.protocol.RtMessage;
 import nearenough.protocol.RtWire;
 
 /**
- * Send a one-off request to the given Roughtime server and dump the response (if any)
+ * Use Netty to send a request to the given Roughtime server and dump the response (if any)
  */
-public final class ResponseDumper {
+public final class NettyClient {
 
-  private static final byte[] GOOGLE_PUBKEY = hexToBytes(
+  // Hostname and port of the public Google Roughtime server
+  private static final String GOOGLE_SERVER_HOST = "roughtime.sandbox.google.com";
+  private static final int GOOGLE_SERVER_PORT = 2002;
+
+  // Long-term public key of the public Google Roughtime server
+  private static final byte[] GOOGLE_SERVER_PUBKEY = hexToBytes(
       "7ad3da688c5c04c635a14786a70bcf30224cc25455371bf9d4a2bfb64b682534"
   );
 
@@ -50,15 +56,22 @@ public final class ResponseDumper {
 
     public RequestHandler(InetSocketAddress addr) {
       this.addr = addr;
-      this.client = new RoughtimeClient(GOOGLE_PUBKEY);
+
+      // Creates a new RoughtimeClient.
+      // Behind the scenes SecureRandom will be used to generate a unique nonce.
+      this.client = new RoughtimeClient(GOOGLE_SERVER_PUBKEY);
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+      // Creates the client request
       RtMessage msg = client.createRequest();
-      ByteBuf buf = RtWire.toWire(msg);
 
-      ctx.writeAndFlush(new DatagramPacket(buf, addr))
+      // Encodes the request for network transmission
+      ByteBuf encodedMsg = RtWire.toWire(msg);
+
+      // Sends the request to the Roughtime server
+      ctx.writeAndFlush(new DatagramPacket(encodedMsg, addr))
           .addListener(fut -> {
             if (!fut.isSuccess()) {
               System.out.println("Send failed " + fut.cause().getMessage());
@@ -68,23 +81,37 @@ public final class ResponseDumper {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
-      System.out.println("NONCE: " + bytesToHex(client.nonce()));
+      // A reply from the server has been received
+
       System.out.printf(
           "Read message of %d bytes from %s:\n", msg.content().readableBytes(), msg.sender()
       );
-      System.out.println(ByteBufUtil.prettyHexDump(msg.content()));
 
+      // Parse the response
       RtMessage response = new RtMessage(msg.content());
       System.out.println(response);
+
+      // Validate the response. Checks that the message is well-formed, all signatures are valid,
+      // and our nonce is present in the response.
       client.processResponse(response);
 
       if (client.isResponseValid()) {
+        // Validation passed, the response is good
+
+        // The "midpoint" is the Roughtime server's reported timestamp (in microseconds). And the
+        // "radius" is a span of uncertainty around that midpoint. A Roughtime server asserts that
+        // its "true time" lies within the span.
         Instant midpoint = Instant.ofEpochMilli(client.midpoint() / 1000L);
-        Instant local = Instant.now();
         int radiusSec = client.radius() / 1_000_000;
         System.out.println("midpoint    : " + midpoint + " (radius " + radiusSec + " sec)");
+
+        // For comparison, also print the local clock. If the midpoint and your local time
+        // are widely different, check your local machine's time sync!
+        Instant local = Instant.now();
         System.out.println("local clock : " + local);
+
       } else {
+        // Validation failed. Print out the reason why.
         System.out.println("Response INVALID: " + client.invalidResponseCause().getMessage());
       }
 
@@ -93,33 +120,37 @@ public final class ResponseDumper {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-      System.out.println("Exception caught: " + cause.getMessage());
       ctx.close();
-      throw new RuntimeException(cause);
+
+      if (cause instanceof ReadTimeoutException) {
+        System.out.println("No reply received from " + addr);
+      } else {
+        System.out.println("Unexpected exception: " + cause.getMessage());
+        throw new RuntimeException(cause);
+      }
     }
   }
 
-  //
-  // For example: roughtime.sandbox.google.com 2002
-  //
   public static void main(String[] args) throws InterruptedException, NoSuchAlgorithmException {
-    if (args.length != 2) {
-      System.out.println("Usage: ResponseDumper SERVER PORT");
-      System.exit(-1);
-    }
+    InetSocketAddress addr = new InetSocketAddress(GOOGLE_SERVER_HOST, GOOGLE_SERVER_PORT);
 
-    String server = args[0];
-    int port = Integer.parseInt(args[1]);
-    InetSocketAddress addr = new InetSocketAddress(server, port);
+    System.out.printf("Sending request to %s\n", addr);
 
-    System.out.printf("Will make request to %s\n", addr);
+    // Below is Netty boilerplate for setting-up an event loop and registering a handler
 
     NioEventLoopGroup group = new NioEventLoopGroup();
     Bootstrap bootstrap = new Bootstrap()
         .group(group)
-        .channel(NioDatagramChannel.class)
         .remoteAddress(addr)
-        .handler(new RequestHandler(addr));
+        .channel(NioDatagramChannel.class)
+        .handler(new ChannelInitializer<NioDatagramChannel>() {
+          @Override
+          protected void initChannel(NioDatagramChannel ch) throws Exception {
+            ch.pipeline()
+                .addLast(new ReadTimeoutHandler(5))
+                .addLast(new RequestHandler(addr));
+          }
+        });
 
     ChannelFuture connectFuture = bootstrap.connect();
     connectFuture.addListener(fut -> {
