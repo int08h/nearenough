@@ -113,7 +113,7 @@ public final class RoughtimeClient {
     checkNotNull(random, "random");
 
     this.nonce = new byte[NONCE_LENGTH];
-    this.longTermPubKey = publicKey;
+    this.longTermPubKey = Arrays.copyOf(publicKey, publicKey.length);
     random.nextBytes(nonce);
   }
 
@@ -128,8 +128,8 @@ public final class RoughtimeClient {
     checkArgument((publicKey != null) && (publicKey.length == PUBKEY_LENGTH), "invalid public key");
     checkArgument((nonce != null) && (nonce.length == NONCE_LENGTH), "invalid nonce");
 
-    this.nonce = nonce;
-    this.longTermPubKey = publicKey;
+    this.nonce = Arrays.copyOf(nonce, nonce.length);
+    this.longTermPubKey = Arrays.copyOf(publicKey, publicKey.length);
   }
 
   /**
