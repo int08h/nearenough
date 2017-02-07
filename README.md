@@ -1,7 +1,11 @@
 # Nearenough
 **Nearenough** is a Java implementation of the 
-[Roughtime](https://roughtime.googlesource.com/roughtime) secure time synchronization protocol.
+[Roughtime](https://roughtime.googlesource.com/roughtime) secure time synchronization protocol. It 
+provides both a Roughtime client and a (work-in-progress) Roughtime server. 
 
+Nearenough aims to be 100% interoperable with the wider Roughtime ecosystem.
+
+## About the Roughtime Protocol
 [Roughtime](https://roughtime.googlesource.com/roughtime) is a protocol that aims to achieve rough 
 time synchronisation in a secure way that doesn't depend on any particular time server, and in such
 a way that, if a time server does misbehave, clients end up with cryptographic proof of it. It was 
@@ -18,9 +22,9 @@ your IDE's project classpath. Building is IDE-only for the moment.
 ## Client Quickstart
 
 ### Client Examples
-See [`NioClient.java`](../master/examples/NioClient.java) and 
-[`NettyClient.java`](../master/examples/NettyClient.java) for examples of sending a request to a 
-Roughtime server and processing the response.
+See [`examples/NioClient.java`](../master/examples/NioClient.java) and 
+[`examples/NettyClient.java`](../master/examples/NettyClient.java) for examples of how to send a 
+request to a Roughtime server and process the response.
 
 ### DIY Client
 If implementing your own client, the general idea is:
@@ -53,11 +57,16 @@ if (client.isResponseValid()) {
 See the javadocs in [`RoughtimeClient.java`](../master/src/nearenough/client/RoughtimeClient.java) 
 for more information.
 
+## Server Quickstart
+
+Server is a work-in-progress. Check back!
+
 ## Implementation Status
 Nearenough is not stable yet. Expect significant changes as the code evolves.
 
-* Protocol - Feature complete
-* Client - Feature complete
+* Protocol - Client protocol is feature complete. Server protocol needs some work, mostly around 
+             Merkle tree handling.
+* Client - Feature complete except for ecosystem-style request chaining.
 * Server - Not started
   
 ## Contributors
