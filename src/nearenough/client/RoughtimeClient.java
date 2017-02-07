@@ -44,11 +44,11 @@ import nearenough.util.BytesUtil;
  * <p>
  * The high-level API consists of:
  * <ul>
- * <li>{@link #createRequest()} - Constructs a RoughTime client request</li>
- * <li>{@link #processResponse(RtMessage)} - Validates the server's response</li>
- * <li>{@link #isResponseValid()} - Indicates if the response passed validation</li>
- * <li>{@link #midpoint()} and {@link #radius()} - Returns the server's provided time value
- * (midpoint) and uncertainty (radius) if the response was valid</li>
+ *   <li>{@link #createRequest()} - Constructs a RoughTime client request</li>
+ *   <li>{@link #processResponse(RtMessage)} - Validates the server's response</li>
+ *   <li>{@link #isResponseValid()} - Indicates if the response passed validation</li>
+ *   <li>{@link #midpoint()} and {@link #radius()} - Returns the server's provided time value
+ *   (midpoint) and uncertainty (radius) if the response was valid</li>
  * </ul>
  *
  * Typical client code will use {@link RoughtimeClient} similar to this:
@@ -78,6 +78,8 @@ import nearenough.util.BytesUtil;
  *     System.out.println("Invalid response: " + client.invalidResponseCause().getMessage());
  *   }
  * </pre>
+ *
+ * An expert API is present and should be avoided by most client code.
  */
 public final class RoughtimeClient {
 
@@ -133,10 +135,10 @@ public final class RoughtimeClient {
   }
 
   /**
-   * @return This instance's nonce value
+   * @return A copy of this instance's nonce value
    */
   public byte[] nonce() {
-    return nonce;
+    return Arrays.copyOf(nonce, nonce.length);
   }
 
   /**
@@ -157,6 +159,7 @@ public final class RoughtimeClient {
 
   /**
    * @return {@code True} if and only if the response was valid in all respects, false otherwise.
+   * If {@code False} use {@link #invalidResponseCause()} to obtain the cause of the invalidity.
    */
   public boolean isResponseValid() {
     return isResponseValid;
@@ -187,11 +190,13 @@ public final class RoughtimeClient {
   /**
    * Validate the server's response:
    * <ol>
-   * <li>Verify signature of the delegation (DELE) certificate</li>
-   * <li>Verify top-level signature of the signed-response (SREP) using the delegated key</li>
-   * <li>Verify the request's nonce (NONC) is included in the response's Merkle tree.</li>
-   * <li>Verify the midpoint (MIDP) lies within the delegation time bounds (MINT, MAXT).</li>
+   *   <li>Verify signature of the delegation (DELE) certificate</li>
+   *   <li>Verify top-level signature of the signed-response (SREP) using the delegated key</li>
+   *   <li>Verify the request's nonce (NONC) is included in the response's Merkle tree.</li>
+   *   <li>Verify the midpoint (MIDP) lies within the delegation time bounds (MINT, MAXT).</li>
    * </ol>
+   *
+   * Use {@link #isResponseValid()} to check the result of the validation.
    *
    * @param response Response from the Roughtime server
    */
@@ -209,6 +214,8 @@ public final class RoughtimeClient {
   }
 
   /**
+   * Expert API
+   * <p>
    * Verify the signature on the DELE message. Throws {@link SignatureInvalid} if the signature is
    * invalid.
    *
@@ -229,6 +236,8 @@ public final class RoughtimeClient {
   }
 
   /**
+   * Expert API
+   * <p>
    * Verify the top-level signature (SIG) on the signed-response (SREP) by the delegated key.
    *
    * @param responseMsg The response {@link RtMessage} reply from the Roughtime server.
@@ -243,6 +252,8 @@ public final class RoughtimeClient {
   }
 
   /**
+   * Expert API
+   * <p>
    * Verify that this instance's nonce is included in the response's Merkle tree
    *
    * @param responseMsg The response {@link RtMessage} reply from the Roughtime server.
@@ -261,6 +272,8 @@ public final class RoughtimeClient {
   }
 
   /**
+   * Expert API
+   * <p>
    * Verify that the repsonse's midpoint (MIDP) is within the time bounds of the delegated key.
    *
    * @param responseMsg The response {@link RtMessage} reply from the Roughtime server.
