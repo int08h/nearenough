@@ -21,6 +21,7 @@ import static nearenough.util.Preconditions.checkState;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -48,13 +49,26 @@ public final class RtMessage {
 
   /**
    * @return A new {@code RtMessage} by parsing the contents of the provided {@code byte[]}. The
-   * contents of {@code bytes} must be a well-formed Roughtime message.
+   * contents of {@code srcBytes} must be a well-formed Roughtime message.
    */
-  public static RtMessage fromBytes(byte[] bytes) {
-    checkNotNull(bytes, "bytes");
+  public static RtMessage fromBytes(byte[] srcBytes) {
+    checkNotNull(srcBytes, "srcBytes");
 
-    ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(bytes.length);
-    buf.writeBytes(bytes);
+    ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(srcBytes.length);
+    buf.writeBytes(srcBytes);
+    return new RtMessage(buf);
+  }
+
+  /**
+   * @return A new {@code RtMessage} by parsing the contents of the provided {@code ByteBuffer},
+   * which can be direct or heap based. The contents of {@code srcBuf} must be a well-formed
+   * Roughtime message.
+   */
+  public static RtMessage fromByteBuffer(ByteBuffer srcBuf) {
+    checkNotNull(srcBuf, "srcBuf");
+
+    ByteBuf buf = ByteBufAllocator.DEFAULT.buffer(srcBuf.remaining());
+    buf.writeBytes(srcBuf);
     return new RtMessage(buf);
   }
 

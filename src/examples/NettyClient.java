@@ -79,6 +79,7 @@ public final class NettyClient {
           });
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
       // A reply from the server has been received
@@ -101,7 +102,7 @@ public final class NettyClient {
         // The "midpoint" is the Roughtime server's reported timestamp (in microseconds). And the
         // "radius" is a span of uncertainty around that midpoint. A Roughtime server asserts that
         // its "true time" lies within the span.
-        Instant midpoint = Instant.ofEpochMilli(client.midpoint() / 1000L);
+        Instant midpoint = Instant.ofEpochMilli(client.midpoint() / 1_000L);
         int radiusSec = client.radius() / 1_000_000;
         System.out.println("midpoint    : " + midpoint + " (radius " + radiusSec + " sec)");
 

@@ -10,7 +10,6 @@ created by Adam Langley and Robert Obryk.
 ## Links
 * [Nearenough Github repo](https://github.com/int08h/nearenough)
 * [Roughtime project](https://roughtime.googlesource.com/roughtime)
-* [Netty project](http://netty.io/)
 
 ## Building
 Nearenough bundles all required dependencies in the `lib` directory. Add those `.jar` files to
@@ -19,9 +18,9 @@ your IDE's project classpath. Building is IDE-only for the moment.
 ## Client Quickstart
 
 ### Client Examples
-See [NioClient.java](../master/src/examples/NioClient.java) and 
-[NettyClient.java](../master/src/examples/NettyClient.java) for examples of sending a request to a 
-Roughtime server and processing the response.
+See [`NioClient.java`](../master/src/examples/NioClient.java) and 
+[`NettyClient.java`](../master/src/examples/NettyClient.java) for examples of sending a request to 
+a Roughtime server and processing the response.
 
 ### DIY Client
 If implementing your own client, the general idea is:
@@ -62,7 +61,7 @@ Nearenough is not stable yet. Expect significant changes as the code evolves.
 * Server - Not started
   
 ## Contributors
-* Stuart Stock, original author (stuart {at} int08h.com)
+* Stuart Stock, original author and current maintainer (stuart {at} int08h.com)
 
 ## Copyright and License
 Nearenough is Copyright (c) 2017 int08h LLC. All rights reserved. 
