@@ -18,9 +18,9 @@ your IDE's project classpath. Building is IDE-only for the moment.
 ## Client Quickstart
 
 ### Client Examples
-See [`NioClient.java`](../master/src/examples/NioClient.java) and 
-[`NettyClient.java`](../master/src/examples/NettyClient.java) for examples of sending a request to 
-a Roughtime server and processing the response.
+See [`NioClient.java`](../master/examples/NioClient.java) and 
+[`NettyClient.java`](../master/examples/NettyClient.java) for examples of sending a request to a 
+Roughtime server and processing the response.
 
 ### DIY Client
 If implementing your own client, the general idea is:
