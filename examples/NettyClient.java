@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-package examples;
-
 import static nearenough.util.BytesUtil.hexToBytes;
 
 import io.netty.bootstrap.Bootstrap;
