@@ -13,11 +13,14 @@
  * limitations under the License.
  */
 
-package nearenough.exceptions;
+package nearenough.protocol.exceptions;
 
-public class MidpointInvalid extends InvalidRoughTimeMessage {
+/**
+ * Tags are not in strictly increasing order
+ */
+public class TagsNotIncreasingException extends InvalidRoughTimeMessage {
 
-  public MidpointInvalid(String message) {
+  public TagsNotIncreasingException(String message) {
     super(message);
   }
 }

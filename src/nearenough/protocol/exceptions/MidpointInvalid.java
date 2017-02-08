@@ -13,14 +13,11 @@
  * limitations under the License.
  */
 
-package nearenough.exceptions;
+package nearenough.protocol.exceptions;
 
-/**
- * Invalid num_tags value in request
- */
-public class InvalidNumTagsException extends InvalidRoughTimeMessage {
+public class MidpointInvalid extends InvalidRoughTimeMessage {
 
-  public InvalidNumTagsException(String message) {
+  public MidpointInvalid(String message) {
     super(message);
   }
 }

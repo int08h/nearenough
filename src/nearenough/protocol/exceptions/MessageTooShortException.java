@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-package nearenough.exceptions;
+package nearenough.protocol.exceptions;
 
 /**
- * Message length is not a multiple of 4
+ * Readable message bytes <4
  */
-public class MessageUnalignedException extends InvalidRoughTimeMessage {
+public class MessageTooShortException extends InvalidRoughTimeMessage {
 
-  public MessageUnalignedException(String message) {
+  public MessageTooShortException(String message) {
     super(message);
   }
 }

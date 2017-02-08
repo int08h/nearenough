@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package nearenough.exceptions;
+package nearenough.protocol.exceptions;
 
 /**
  * Tag's value offset is not a multiple of 4

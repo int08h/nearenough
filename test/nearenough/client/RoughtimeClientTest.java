@@ -25,9 +25,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import nearenough.exceptions.MerkleTreeInvalid;
-import nearenough.exceptions.MidpointInvalid;
-import nearenough.exceptions.SignatureInvalid;
+import nearenough.protocol.exceptions.MerkleTreeInvalid;
+import nearenough.protocol.exceptions.MidpointInvalid;
+import nearenough.protocol.exceptions.SignatureInvalid;
 import nearenough.protocol.RtConstants;
 import nearenough.protocol.RtHashing;
 import nearenough.protocol.RtMessage;

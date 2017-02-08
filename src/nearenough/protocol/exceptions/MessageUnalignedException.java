@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-package nearenough.exceptions;
+package nearenough.protocol.exceptions;
 
 /**
- * The response's Merkle tree is invalid.
+ * Message length is not a multiple of 4
  */
-public class MerkleTreeInvalid extends InvalidRoughTimeMessage {
+public class MessageUnalignedException extends InvalidRoughTimeMessage {
 
-  public MerkleTreeInvalid(String message) {
+  public MessageUnalignedException(String message) {
     super(message);
   }
 }

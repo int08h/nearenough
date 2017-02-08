@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-package nearenough.exceptions;
+package nearenough.protocol.exceptions;
 
 /**
- * The signature doesn't verify
+ * The response's Merkle tree is invalid.
  */
-public class SignatureInvalid extends InvalidRoughTimeMessage {
+public class MerkleTreeInvalid extends InvalidRoughTimeMessage {
 
-  public SignatureInvalid(String message) {
+  public MerkleTreeInvalid(String message) {
     super(message);
   }
 }

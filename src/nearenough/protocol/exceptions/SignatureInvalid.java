@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-package nearenough.exceptions;
+package nearenough.protocol.exceptions;
 
 /**
- * Tag's offset is out of bounds (outside message boundary)
+ * The signature doesn't verify
  */
-public class TagOffsetOverflowException extends InvalidRoughTimeMessage {
+public class SignatureInvalid extends InvalidRoughTimeMessage {
 
-  public TagOffsetOverflowException(String message) {
+  public SignatureInvalid(String message) {
     super(message);
   }
 }

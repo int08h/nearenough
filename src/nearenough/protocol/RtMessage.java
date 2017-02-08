@@ -26,12 +26,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import nearenough.exceptions.InvalidNumTagsException;
-import nearenough.exceptions.MessageTooShortException;
-import nearenough.exceptions.MessageUnalignedException;
-import nearenough.exceptions.TagOffsetOverflowException;
-import nearenough.exceptions.TagOffsetUnalignedException;
-import nearenough.exceptions.TagsNotIncreasingException;
+import nearenough.protocol.exceptions.InvalidNumTagsException;
+import nearenough.protocol.exceptions.MessageTooShortException;
+import nearenough.protocol.exceptions.MessageUnalignedException;
+import nearenough.protocol.exceptions.TagOffsetOverflowException;
+import nearenough.protocol.exceptions.TagOffsetUnalignedException;
+import nearenough.protocol.exceptions.TagsNotIncreasingException;
 
 /**
  * An immutable Roughtime protocol message.

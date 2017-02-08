@@ -24,13 +24,13 @@ import static org.junit.Assert.fail;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import java.nio.charset.StandardCharsets;
-import nearenough.exceptions.InvalidNumTagsException;
-import nearenough.exceptions.InvalidTagException;
-import nearenough.exceptions.MessageTooShortException;
-import nearenough.exceptions.MessageUnalignedException;
-import nearenough.exceptions.TagOffsetOverflowException;
-import nearenough.exceptions.TagOffsetUnalignedException;
-import nearenough.exceptions.TagsNotIncreasingException;
+import nearenough.protocol.exceptions.InvalidNumTagsException;
+import nearenough.protocol.exceptions.InvalidTagException;
+import nearenough.protocol.exceptions.MessageTooShortException;
+import nearenough.protocol.exceptions.MessageUnalignedException;
+import nearenough.protocol.exceptions.TagOffsetOverflowException;
+import nearenough.protocol.exceptions.TagOffsetUnalignedException;
+import nearenough.protocol.exceptions.TagsNotIncreasingException;
 import org.junit.Test;
 
 public final class RtMessageTest {

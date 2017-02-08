@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-package nearenough.exceptions;
+package nearenough.protocol.exceptions;
 
 /**
- * Readable message bytes <4
+ * Invalid num_tags value in request
  */
-public class MessageTooShortException extends InvalidRoughTimeMessage {
+public class InvalidNumTagsException extends InvalidRoughTimeMessage {
 
-  public MessageTooShortException(String message) {
+  public InvalidNumTagsException(String message) {
     super(message);
   }
 }

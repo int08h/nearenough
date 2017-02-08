@@ -13,14 +13,11 @@
  * limitations under the License.
  */
 
-package nearenough.exceptions;
+package nearenough.protocol.exceptions;
 
-/**
- * Numeric tag value is not recognized
- */
-public class InvalidTagException extends InvalidRoughTimeMessage {
+public class InvalidRoughTimeMessage extends RuntimeException {
 
-  public InvalidTagException(String message) {
+  public InvalidRoughTimeMessage(String message) {
     super(message);
   }
 }

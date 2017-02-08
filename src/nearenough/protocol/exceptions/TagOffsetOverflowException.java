@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-package nearenough.exceptions;
+package nearenough.protocol.exceptions;
 
 /**
- * Tags are not in strictly increasing order
+ * Tag's offset is out of bounds (outside message boundary)
  */
-public class TagsNotIncreasingException extends InvalidRoughTimeMessage {
+public class TagOffsetOverflowException extends InvalidRoughTimeMessage {
 
-  public TagsNotIncreasingException(String message) {
+  public TagOffsetOverflowException(String message) {
     super(message);
   }
 }
