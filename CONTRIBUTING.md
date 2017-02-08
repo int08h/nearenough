@@ -39,13 +39,13 @@ Contributions that introduce new external dependencies are very likely to be rej
 
 Section 5 of the Apache 2.0 license describes how contributions are handled:
 
-   > 5. Submission of Contributions. Unless You explicitly state otherwise,
-   >    any Contribution intentionally submitted for inclusion in the Work
-   >    by You to the Licensor shall be under the terms and conditions of
-   >    this License, without any additional terms or conditions.
-   >    Notwithstanding the above, nothing herein shall supersede or modify
-   >    the terms of any separate license agreement you may have executed
-   >    with Licensor regarding such Contributions.
+   > Submission of Contributions. Unless You explicitly state otherwise,
+   > any Contribution intentionally submitted for inclusion in the Work
+   > by You to the Licensor shall be under the terms and conditions of
+   > this License, without any additional terms or conditions.
+   > Notwithstanding the above, nothing herein shall supersede or modify
+   > the terms of any separate license agreement you may have executed
+   > with Licensor regarding such Contributions.
       
 ### Contributor License Agreement
 
