@@ -31,8 +31,8 @@ import nearenough.protocol.RtEd25519;
 import nearenough.protocol.RtMessage;
 import nearenough.protocol.RtTag;
 import nearenough.protocol.RtWire;
+import nearenough.server.clock.ClockSource;
 import nearenough.server.clock.SystemClock;
-import nearenough.server.clock.TimeSource;
 import nearenough.util.BytesUtil;
 
 /**
@@ -44,7 +44,7 @@ public final class LongTermKey {
   private final RtEd25519.Signer longTermKey;
   private final Duration delegationDuration;
   private final Random random;
-  private final TimeSource clock;
+  private final ClockSource clock;
 
   private RtEd25519.Signer delegatedKey;
   private long delegationStart;
@@ -54,7 +54,7 @@ public final class LongTermKey {
     this(seed, Duration.ofDays(7), new SystemClock());
   }
 
-  public LongTermKey(byte[] seed, Duration delegationDuration, TimeSource clock)
+  public LongTermKey(byte[] seed, Duration delegationDuration, ClockSource clock)
       throws SignatureException, InvalidKeyException
   {
     checkArgument((seed != null) && (seed.length >= MIN_SEED_LENGTH), "invalid private seed");
@@ -107,7 +107,7 @@ public final class LongTermKey {
     byte[] deleBytes = new byte[buf.readableBytes()];
     buf.readBytes(deleBytes);
 
-    byte[] sigBytes = makeLongTermSignature(deleBytes);
+    byte[] sigBytes = signLongTermKey(deleBytes);
 
     return RtMessage.builder()
         .add(RtTag.SIG, sigBytes)
@@ -151,7 +151,7 @@ public final class LongTermKey {
    *
    * @throws SignatureException If signing operation fails
    */
-  public byte[] makeLongTermSignature(byte[] content) throws SignatureException {
+  public byte[] signLongTermKey(byte[] content) throws SignatureException {
     longTermKey.update(content);
     return longTermKey.sign();
   }
@@ -164,7 +164,7 @@ public final class LongTermKey {
    *
    * @throws SignatureException If signing operation fails
    */
-  public byte[] makeDelegatedSignature(byte[] content) throws SignatureException {
+  public byte[] signDelegatedKey(byte[] content) throws SignatureException {
     long now = clock.now();
     checkState(
         (now >= delegationStart) && (now <= delegationEnd),

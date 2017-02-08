@@ -16,23 +16,30 @@
 package nearenough.server;
 
 import static nearenough.protocol.RtConstants.MIN_SEED_LENGTH;
-import static nearenough.util.BytesUtil.hexToBytes;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Duration;
 import java.util.Arrays;
-import nearenough.protocol.RtConstants;
+import java.util.concurrent.TimeUnit;
 import nearenough.protocol.RtEd25519;
+import nearenough.protocol.RtEd25519.Verifier;
+import nearenough.protocol.RtMessage;
+import nearenough.protocol.RtTag;
+import nearenough.server.clock.TestingClock;
+import nearenough.util.BytesUtil;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public final class LongTermKeyTest {
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
   private static final byte[] SEED = new byte[MIN_SEED_LENGTH];
 
@@ -47,7 +54,7 @@ public final class LongTermKeyTest {
 
     byte[] content = "This is a test message".getBytes();
 
-    byte[] signature = ltk.makeLongTermSignature(content);
+    byte[] signature = ltk.signLongTermKey(content);
     verifier.update(content);
 
     assertTrue(verifier.verify(signature));
@@ -56,16 +63,79 @@ public final class LongTermKeyTest {
   @Test
   public void successfulDelegatedSignatureRoundTrip() throws Exception {
     LongTermKey ltk = new LongTermKey(SEED);
-    ltk.newDelegatedKey();
 
-    byte[] content = "800 fill power down".getBytes();
+    for (int i = 0; i < 10; i++) {
+      ltk.newDelegatedKey();
 
-    RtEd25519.Verifier verifier = new RtEd25519.Verifier(ltk.delegatedPublicKey());
+      byte[] content = (i + " bottles of beer").getBytes();
 
-    byte[] signature = ltk.makeDelegatedSignature(content);
-    verifier.update(content);
+      RtEd25519.Verifier verifier = new RtEd25519.Verifier(ltk.delegatedPublicKey());
 
-    assertTrue(verifier.verify(signature));
+      byte[] signature = ltk.signDelegatedKey(content);
+      verifier.update(content);
+
+      assertTrue(verifier.verify(signature));
+    }
   }
 
+  @Test
+  public void signingPriorToDelegationBoundsThrows() throws Exception {
+    TestingClock clock = new TestingClock();
+    LongTermKey key = new LongTermKey(SEED, Duration.ofDays(10), clock);
+
+    key.newDelegatedKey();
+
+    clock.decrement(5, TimeUnit.MINUTES);
+
+    assertThat(clock.now(), lessThan(key.delegationStart()));
+
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("outside delegated key bounds");
+    key.signDelegatedKey(new byte[1]);
+  }
+
+  @Test
+  public void signingAfterDelegationBoundsThrows() throws Exception {
+    TestingClock clock = new TestingClock();
+    LongTermKey key = new LongTermKey(SEED, Duration.ofDays(10), clock);
+
+    key.newDelegatedKey();
+
+    clock.advance(15, TimeUnit.DAYS);
+
+    assertThat(clock.now(), greaterThan(key.delegationStart()));
+
+    thrown.expect(IllegalStateException.class);
+    thrown.expectMessage("outside delegated key bounds");
+    key.signDelegatedKey(new byte[1]);
+  }
+
+  @Test
+  public void certMessageIsValid() throws Exception {
+    TestingClock clock = new TestingClock();
+    LongTermKey key = new LongTermKey(SEED, Duration.ofDays(1), clock);
+
+    RtMessage cert = key.asCertMessage();
+    assertThat(cert.numTags(), equalTo(2));
+
+    // extract the DELE message
+    RtMessage dele = RtMessage.fromBytes(cert.get(RtTag.DELE));
+    assertThat(dele.numTags(), equalTo(3));
+
+    // PUBK
+    assertArrayEquals(dele.get(RtTag.PUBK), key.delegatedPublicKey());
+
+    // MINT
+    long minT = BytesUtil.getLongLE(dele.get(RtTag.MINT), 0);
+    assertThat(minT, equalTo(key.delegationStart()));
+
+    // MAXT
+    long maxT = BytesUtil.getLongLE(dele.get(RtTag.MAXT), 0);
+    assertThat(maxT, equalTo(key.delegationEnd()));
+
+    // SIG on DELE
+    RtEd25519.Verifier longTermVerify = new RtEd25519.Verifier(key.longTermPublicKey());
+    longTermVerify.update(cert.get(RtTag.DELE));
+    assertTrue(longTermVerify.verify(cert.get(RtTag.SIG)));
+  }
 }

@@ -16,9 +16,9 @@
 package nearenough.server.clock;
 
 /**
- * A TimeSource provides milliseonds since the epoch
+ * A ClockSource provides milliseonds since the epoch
  */
-public interface TimeSource {
+public interface ClockSource {
 
   /**
    * @return UTC milliseconds since the epoch

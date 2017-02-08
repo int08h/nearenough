@@ -15,13 +15,37 @@
 
 package nearenough.server.clock;
 
+import java.util.concurrent.TimeUnit;
+
 /**
- * A {@link ClockSource} that uses {@link System#currentTimeMillis()}
+ * A {@link ClockSource} to be used for tests
  */
-public class SystemClock implements ClockSource {
+public final class TestingClock implements ClockSource {
+
+  private long now;
+
+  public TestingClock() {
+    this.now = System.currentTimeMillis();
+  }
+
+  public TestingClock(long now) {
+    this.now = now;
+  }
 
   @Override
   public long now() {
-    return System.currentTimeMillis();
+    return now;
+  }
+
+  public void setNow(long now) {
+    this.now = now;
+  }
+
+  public void advance(int amount, TimeUnit unit) {
+    this.now += unit.toMillis(amount);
+  }
+
+  public void decrement(int amount, TimeUnit unit) {
+    this.now -= unit.toMillis(amount);
   }
 }
