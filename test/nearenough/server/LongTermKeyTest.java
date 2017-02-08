@@ -27,7 +27,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import nearenough.protocol.RtEd25519;
-import nearenough.protocol.RtEd25519.Verifier;
 import nearenough.protocol.RtMessage;
 import nearenough.protocol.RtTag;
 import nearenough.server.clock.TestingClock;
