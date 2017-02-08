@@ -72,6 +72,9 @@ Nearenough is not stable yet. Expect significant changes as the code evolves.
 ## Contributors
 * Stuart Stock, original author and current maintainer (stuart {at} int08h.com)
 
+If you would like to contribute to Nearenough, please see the guidlines in  
+[CONTRIBUTING.md](../master/CONTRIBUTING.md).
+
 ## Copyright and License
 Nearenough is Copyright (c) 2017 int08h LLC. All rights reserved. 
 
