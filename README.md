@@ -67,7 +67,7 @@ Nearenough is not stable yet. Expect significant changes as the code evolves.
 * Protocol - Client protocol is feature complete. Server protocol needs some work, mostly around 
              Merkle tree handling.
 * Client - Feature complete except for ecosystem-style request chaining.
-* Server - Not started
+* Server - Just getting started
   
 ## Contributors
 * Stuart Stock, original author and current maintainer (stuart {at} int08h.com)
