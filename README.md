@@ -1,7 +1,6 @@
 # Nearenough
-**Nearenough** is a Java implementation of the 
-[Roughtime](https://roughtime.googlesource.com/roughtime) secure time synchronization protocol. It 
-provides both a Roughtime client and a (work-in-progress) Roughtime server. 
+**Nearenough** is a Java client of the [Roughtime](https://roughtime.googlesource.com/roughtime) 
+secure time synchronization protocol.
 
 Nearenough aims to be 100% interoperable with the wider Roughtime ecosystem.
 
@@ -19,7 +18,7 @@ created by Adam Langley and Robert Obryk.
 Nearenough bundles all required dependencies in the `lib` directory. Add those `.jar` files to
 your IDE's project classpath. Building is IDE-only for the moment. 
 
-## Client Quickstart
+## Quickstart
 
 ### Client Examples
 See [`examples/NioClient.java`](../master/examples/NioClient.java) and 
@@ -57,22 +56,16 @@ if (client.isResponseValid()) {
 See the javadocs in [`RoughtimeClient.java`](../master/src/nearenough/client/RoughtimeClient.java) 
 for more information.
 
-## Server Quickstart
-
-Server is a work-in-progress. Check back!
-
 ## Implementation Status
-Nearenough is not stable yet. Expect significant changes as the code evolves.
+Nearenough is stable. 
 
-* Protocol - Client protocol is feature complete. Server protocol needs some work, mostly around 
-             Merkle tree handling.
+* Protocol - Client protocol is feature complete. 
 * Client - Feature complete except for ecosystem-style request chaining.
-* Server - Just getting started
   
 ## Contributors
 * Stuart Stock, original author and current maintainer (stuart {at} int08h.com)
 
-If you would like to contribute to Nearenough, please see the guidlines in 
+If you would like to contribute to Nearenough, please see the guidelines in 
 [CONTRIBUTING.md](../master/CONTRIBUTING.md).
 
 ## Copyright and License

@@ -2,9 +2,9 @@ Features and changes under consideration. Not necessarily in order.
 
 * Mutation testing using PIT http://pitest.org/
 
-* Remove Netty dependency in client and protocol. While server will always need Netty, having a
-  dependency-free client and protocol seems worthwhile as it opens up the possibility of use
-  on Android. This would mean using either ByteBuffer or byte[] in place of ByteBuf.
+* Remove Netty dependency in client and protocol. Having a dependency-free client and protocol seems
+  worthwhile as it opens up the possibility of use on Android. This would mean using either 
+  ByteBuffer or byte[] in place of ByteBuf.
 
 * Further towards potential use on Android, remove the few Java 8 features from the codebase. This
   only makes sense if above the client and protocol changes are made first.
@@ -21,5 +21,5 @@ Features and changes under consideration. Not necessarily in order.
 Non-features, will not be implemented:
 
 * Logging in the client and protocol. I have little desire to wade into the tire fire that is Java
-  logging. My stance is that it's a choice client code should make. TBD on the server code.
+  logging. My stance is that it's a choice client code should make.
 
