@@ -13,6 +13,8 @@ created by Adam Langley and Robert Obryk.
 ## Links
 * [Nearenough Github repo](https://github.com/int08h/nearenough)
 * [Roughtime project](https://roughtime.googlesource.com/roughtime)
+* My blog posts [describing Roughtime features](https://int08h.com/post/to-catch-a-lying-timeserver/) and 
+  exploring the [Nearenough API and details of Roughtime messages](https://int08h.com/post/roughtime-message-anatomy/).
 
 ## Building
 Nearenough bundles all required dependencies in the `lib` directory. Add those `.jar` files to
