@@ -9,16 +9,15 @@ Contributions to Nearenough are welcomed!
 5. Discuss and iterate
 
 Notes
-* Keep pull requests limited to a single issue.
-* Keep whitespace-only commits separate from other code changes. If needed commit your new feature
-  or fix first then follow with a separate whitespace/style commit.
+* Please keep pull requests limited to a single issue.
+* Whitespace-only commits should be separate from other code changes. You can commit your new feature
+  or fix first and then follow with a separate whitespace/style commit.
 
 ## Testing
 
-* Any pull request that causes the test suite to fail will be rejected.
 * New features/functionality require new tests. 
+* Please run the test suite and ensure it passes.
 * Bugfixes should be accompanied by a test case covering the bug.
-* A pull request that reduces code coverage will likely be rejected.
 
 ## Style/Coding Standard
 
@@ -32,8 +31,6 @@ Notes
 
 Nearenough should be as unencumbered as possible. The `protocol` and `client` packages in particular
 strive to be bare-bones and may depend only on the Java 8 standard library, EdDSA-Java, and Netty.
-
-Contributions that introduce new external dependencies are very likely to be rejected.
 
 ## Licensing of Contributions
 
