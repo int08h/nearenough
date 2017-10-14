@@ -1,4 +1,8 @@
-# Nearenough [![Build Status](https://travis-ci.org/int08h/nearenough.svg?branch=master)](https://travis-ci.org/int08h/nearenough)
+# Nearenough 
+
+[![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
+[![Build Status](https://travis-ci.org/int08h/nearenough.svg?branch=master)](https://travis-ci.org/int08h/nearenough)
+
 **Nearenough** is a Java client of the [Roughtime](https://roughtime.googlesource.com/roughtime) 
 secure time synchronization protocol.
 
