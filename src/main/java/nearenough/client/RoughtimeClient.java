@@ -29,14 +29,14 @@ import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Random;
-import nearenough.protocol.exceptions.InvalidRoughTimeMessage;
-import nearenough.protocol.exceptions.MerkleTreeInvalid;
-import nearenough.protocol.exceptions.MidpointInvalid;
-import nearenough.protocol.exceptions.SignatureInvalid;
 import nearenough.protocol.RtEd25519;
 import nearenough.protocol.RtHashing;
 import nearenough.protocol.RtMessage;
 import nearenough.protocol.RtTag;
+import nearenough.protocol.exceptions.InvalidRoughTimeMessage;
+import nearenough.protocol.exceptions.MerkleTreeInvalid;
+import nearenough.protocol.exceptions.MidpointInvalid;
+import nearenough.protocol.exceptions.SignatureInvalid;
 import nearenough.util.BytesUtil;
 
 /**
@@ -111,8 +111,9 @@ public final class RoughtimeClient {
    * @param random random number generator used to create the nonce
    */
   public RoughtimeClient(byte[] publicKey, Random random) {
-    checkArgument((publicKey != null) && (publicKey.length == PUBKEY_LENGTH), "invalid public key");
+    checkNotNull(publicKey);
     checkNotNull(random, "random");
+    checkArgument(publicKey.length == PUBKEY_LENGTH, "invalid public key");
 
     this.nonce = new byte[NONCE_LENGTH];
     this.longTermPubKey = Arrays.copyOf(publicKey, publicKey.length);
@@ -127,8 +128,10 @@ public final class RoughtimeClient {
    * @param nonce nonce to use in request
    */
   public RoughtimeClient(byte[] publicKey, byte[] nonce) {
-    checkArgument((publicKey != null) && (publicKey.length == PUBKEY_LENGTH), "invalid public key");
-    checkArgument((nonce != null) && (nonce.length == NONCE_LENGTH), "invalid nonce");
+    checkNotNull(publicKey, "publicKey");
+    checkNotNull(nonce, "nonce");
+    checkArgument(publicKey.length == PUBKEY_LENGTH, "invalid public key");
+    checkArgument(nonce.length == NONCE_LENGTH, "invalid nonce");
 
     this.nonce = Arrays.copyOf(nonce, nonce.length);
     this.longTermPubKey = Arrays.copyOf(publicKey, publicKey.length);

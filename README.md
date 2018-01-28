@@ -21,15 +21,17 @@ created by Adam Langley and Robert Obryk.
   exploring the [Nearenough API and details of Roughtime messages](https://int08h.com/post/roughtime-message-anatomy/).
 
 ## Building
-Gradle is used to build Nearenough. 
+Gradle is used to build Nearenough. Run the tests:
+
+```bash
+$ ./gradlew test
+```
+
+And the examples:
 
 ```bash
 $ ./gradlew nioExample
-```
-
-and 
-
-```bash
+# or
 $ ./gradlew nettyExample
 ```
 

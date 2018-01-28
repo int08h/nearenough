@@ -26,6 +26,7 @@ public final class BytesUtil {
    * @param s the hex string to be converted.
    * @return the byte[]
    */
+  @SuppressWarnings("NumericCastThatLosesPrecision")
   public static byte[] hexToBytes(String s) {
     int len = s.length();
     byte[] data = new byte[len / 2];
@@ -69,25 +70,25 @@ public final class BytesUtil {
   }
 
   public static long getLong(byte[] memory, int index) {
-    return ((long) memory[index] & 0xff) << 56 |
-        ((long) memory[index + 1] & 0xff) << 48 |
-        ((long) memory[index + 2] & 0xff) << 40 |
-        ((long) memory[index + 3] & 0xff) << 32 |
-        ((long) memory[index + 4] & 0xff) << 24 |
-        ((long) memory[index + 5] & 0xff) << 16 |
-        ((long) memory[index + 6] & 0xff) << 8 |
-        (long) memory[index + 7] & 0xff;
+    return (memory[index] & 0xffL) << 56 |
+        (memory[index + 1] & 0xffL) << 48 |
+        (memory[index + 2] & 0xffL) << 40 |
+        (memory[index + 3] & 0xffL) << 32 |
+        (memory[index + 4] & 0xffL) << 24 |
+        (memory[index + 5] & 0xffL) << 16 |
+        (memory[index + 6] & 0xffL) << 8 |
+        memory[index + 7] & 0xffL;
   }
 
   public static long getLongLE(byte[] memory, int index) {
-    return (long) memory[index] & 0xff |
-        ((long) memory[index + 1] & 0xff) << 8 |
-        ((long) memory[index + 2] & 0xff) << 16 |
-        ((long) memory[index + 3] & 0xff) << 24 |
-        ((long) memory[index + 4] & 0xff) << 32 |
-        ((long) memory[index + 5] & 0xff) << 40 |
-        ((long) memory[index + 6] & 0xff) << 48 |
-        ((long) memory[index + 7] & 0xff) << 56;
+    return memory[index] & 0xffL |
+        (memory[index + 1] & 0xffL) << 8 |
+        (memory[index + 2] & 0xffL) << 16 |
+        (memory[index + 3] & 0xffL) << 24 |
+        (memory[index + 4] & 0xffL) << 32 |
+        (memory[index + 5] & 0xffL) << 40 |
+        (memory[index + 6] & 0xffL) << 48 |
+        (memory[index + 7] & 0xffL) << 56;
   }
 
   public static void setInt(byte[] memory, int index, int value) {
