@@ -1,16 +1,49 @@
+//
+// Gradle build for Nearenough
+//
+// Copyright (c) 2017-2018 int08h LLC. All rights reserved.
+//
+
 repositories {
     jcenter()
 }
 
 apply plugin: 'java'
-
+apply plugin: 'eclipse'
+apply plugin: 'idea'
 
 dependencies {
     // local snapshot of Ed25519
     compile files('lib/eddsa-0.1.0.jar')
 
-    compile 'io.netty:netty-all:4.1.16.Final'
+    compile 'io.netty:netty-all:4.1.20.Final'
 
     testCompile 'junit:junit:4.12'
+}
+
+// Suppress "Illegal reflective access" warnings on Java 9
+def shouldAddOpens = JavaVersion.current().java9Compatible
+
+// Runs the NIO example
+task nioExample(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'nearenough.examples.NioClient'
+
+    if (shouldAddOpens) {
+        jvmArgs = ['--add-opens', 'java.base/java.nio=ALL-UNNAMED']
+    }
+}
+
+// Runs the NIO example
+task nettyExample(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'nearenough.examples.NettyClient'
+
+    if (shouldAddOpens) {
+        jvmArgs = [
+            '--add-opens', 'java.base/sun.nio.ch=ALL-UNNAMED',
+            '--add-opens', 'java.base/java.nio=ALL-UNNAMED'
+        ]
+    }
 }
 

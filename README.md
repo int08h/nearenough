@@ -21,8 +21,17 @@ created by Adam Langley and Robert Obryk.
   exploring the [Nearenough API and details of Roughtime messages](https://int08h.com/post/roughtime-message-anatomy/).
 
 ## Building
-Nearenough bundles all required dependencies in the `lib` directory. Add those `.jar` files to
-your IDE's project classpath. Building is IDE-only for the moment. 
+Gradle is used to build Nearenough. 
+
+```bash
+$ ./gradlew nioExample
+```
+
+and 
+
+```bash
+$ ./gradlew nettyExample
+```
 
 ## Quickstart
 
@@ -75,7 +84,7 @@ If you would like to contribute to Nearenough, please see the guidelines in
 [CONTRIBUTING.md](../master/CONTRIBUTING.md).
 
 ## Copyright and License
-Nearenough is Copyright (c) 2017 int08h LLC. All rights reserved. 
+Nearenough is Copyright (c) 2017-2018 int08h LLC. All rights reserved. 
 
 int08h LLC licenses Nearenough (the "Software") to you under the Apache License, version 2.0 
 (the "License"); you may not use this Software except in compliance with the License. You may obtain 

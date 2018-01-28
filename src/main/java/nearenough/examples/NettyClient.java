@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+package nearenough.examples;
+
 import static nearenough.util.BytesUtil.hexToBytes;
 
 import io.netty.bootstrap.Bootstrap;
@@ -26,8 +28,8 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.handler.timeout.ReadTimeoutException;
 import io.netty.handler.timeout.ReadTimeoutHandler;
+
 import java.net.InetSocketAddress;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import nearenough.client.RoughtimeClient;
 import nearenough.protocol.RtMessage;
@@ -70,9 +72,9 @@ public final class NettyClient {
 
       // Sends the request to the Roughtime server
       ctx.writeAndFlush(new DatagramPacket(encodedMsg, addr))
-          .addListener(fut -> {
-            if (!fut.isSuccess()) {
-              System.out.println("Send failed " + fut.cause().getMessage());
+          .addListener(future -> {
+            if (!future.isSuccess()) {
+              System.out.println("Send failed " + future.cause().getMessage());
             }
           });
     }
@@ -114,7 +116,7 @@ public final class NettyClient {
         System.out.println("Response INVALID: " + client.invalidResponseCause().getMessage());
       }
 
-      ctx.close();
+      ctx.close().addListener(unused -> System.exit(0));
     }
 
     @Override
@@ -130,16 +132,15 @@ public final class NettyClient {
     }
   }
 
-  public static void main(String[] args) throws InterruptedException, NoSuchAlgorithmException {
+  public static void main(String[] args) throws InterruptedException {
     InetSocketAddress addr = new InetSocketAddress(GOOGLE_SERVER_HOST, GOOGLE_SERVER_PORT);
 
     System.out.printf("Sending request to %s\n", addr);
 
     // Below is Netty boilerplate for setting-up an event loop and registering a handler
-
-    NioEventLoopGroup group = new NioEventLoopGroup();
+    NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup();
     Bootstrap bootstrap = new Bootstrap()
-        .group(group)
+        .group(nioEventLoopGroup)
         .remoteAddress(addr)
         .channel(NioDatagramChannel.class)
         .handler(new ChannelInitializer<NioDatagramChannel>() {
@@ -152,14 +153,14 @@ public final class NettyClient {
         });
 
     ChannelFuture connectFuture = bootstrap.connect();
-    connectFuture.addListener(fut -> {
-      if (!fut.isSuccess()) {
+    connectFuture.addListener(future -> {
+      if (!future.isSuccess()) {
         System.out.println("Connect fail:");
-        System.out.println(fut.cause().getMessage());
+        System.out.println(future.cause().getMessage());
       }
     });
 
     connectFuture.channel().closeFuture().sync();
-    group.shutdownGracefully();
+    nioEventLoopGroup.shutdownGracefully();
   }
 }

@@ -12,10 +12,12 @@
  * either express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nearenough.examples;
 
 import static nearenough.util.BytesUtil.hexToBytes;
 
 import io.netty.buffer.ByteBuf;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardProtocolFamily;
@@ -48,7 +50,6 @@ public final class NioClient {
     // Nonblocking NIO UDP channel for the remote Roughtime server
     DatagramChannel channel = DatagramChannel.open(StandardProtocolFamily.INET);
     channel.configureBlocking(false);
-    channel.socket().bind(new InetSocketAddress(GOOGLE_SERVER_PORT));
 
     // Create a new RoughtimeClient instance
     RoughtimeClient client = new RoughtimeClient(GOOGLE_SERVER_PUBKEY);
@@ -59,7 +60,8 @@ public final class NioClient {
     // Encode for transmission
     ByteBuf encodedRequest = RtWire.toWire(request);
 
-    // Send the encoded request, converting the Netty ByteBuf to a Java ByteBuffer for NIO use.
+    // Send the message
+    channel.send(encodedRequest.nioBuffer(), addr);
     int bytesWritten = channel.send(encodedRequest.nioBuffer(), addr);
 
     // Ensure the message was sent
@@ -118,5 +120,7 @@ public final class NioClient {
       // No reply within five seconds
       System.out.println("No response from " + addr);
     }
+
+    System.exit(0);
   }
 }
