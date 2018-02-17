@@ -19,10 +19,6 @@ import static nearenough.protocol.RtConstants.MIN_SEED_LENGTH;
 import static nearenough.protocol.RtConstants.PUBKEY_LENGTH;
 import static nearenough.util.Preconditions.checkArgument;
 
-import java.security.InvalidKeyException;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.SignatureException;
 import net.i2p.crypto.eddsa.EdDSAEngine;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
@@ -30,6 +26,11 @@ import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
 import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
+
+import java.security.InvalidKeyException;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
 
 /**
  * Provides Ed25519 signing and verification.
@@ -55,7 +56,7 @@ public final class RtEd25519 {
      * seed will be transformed and expanded into an Ed25519 private key as described in <a
      * href="https://tools.ietf.org/html/rfc8032#page-13">RFC 8032</a>.
      */
-    public Signer(byte[] seedBytes) throws InvalidKeyException, SignatureException {
+    public Signer(byte[] seedBytes) throws InvalidKeyException {
       checkArgument(seedBytes.length >= MIN_SEED_LENGTH, "insufficient private key seed length");
 
       EdDSAPrivateKeySpec privateSpec = new EdDSAPrivateKeySpec(seedBytes, ED25519_SPEC);
@@ -106,7 +107,7 @@ public final class RtEd25519 {
      *
      * @param publicKeyBytes A byte[32] containing the Ed25519 public key to use for verifications.
      */
-    public Verifier(byte[] publicKeyBytes) throws InvalidKeyException, SignatureException {
+    public Verifier(byte[] publicKeyBytes) throws InvalidKeyException {
       checkArgument(publicKeyBytes.length == PUBKEY_LENGTH, "incorrect public key size");
 
       EdDSAPublicKeySpec publicSpec = new EdDSAPublicKeySpec(publicKeyBytes, ED25519_SPEC);

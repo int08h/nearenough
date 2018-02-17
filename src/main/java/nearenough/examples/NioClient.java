@@ -81,7 +81,7 @@ public final class NioClient {
       if (recvBuf.hasRemaining()) {
         break;
       }
-      Thread.sleep(100);
+      Thread.sleep(100L);
     }
 
     if (recvBuf.hasRemaining()) {

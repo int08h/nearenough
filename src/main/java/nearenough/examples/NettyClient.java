@@ -63,7 +63,7 @@ public final class NettyClient {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) {
       // Creates the client request
       RtMessage msg = client.createRequest();
 
@@ -81,7 +81,7 @@ public final class NettyClient {
 
     @SuppressWarnings("Duplicates")
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) {
       // A reply from the server has been received
 
       System.out.printf(
@@ -120,7 +120,7 @@ public final class NettyClient {
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
       ctx.close();
 
       if (cause instanceof ReadTimeoutException) {
@@ -145,7 +145,7 @@ public final class NettyClient {
         .channel(NioDatagramChannel.class)
         .handler(new ChannelInitializer<NioDatagramChannel>() {
           @Override
-          protected void initChannel(NioDatagramChannel ch) throws Exception {
+          protected void initChannel(NioDatagramChannel ch) {
             ch.pipeline()
                 .addLast(new ReadTimeoutHandler(5))
                 .addLast(new RequestHandler(addr));
