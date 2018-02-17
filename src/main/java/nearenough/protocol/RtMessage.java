@@ -21,6 +21,7 @@ import static nearenough.util.Preconditions.checkState;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufUtil;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
@@ -119,17 +120,17 @@ public final class RtMessage {
   }
 
   /**
-   * @return A read-only view of the message's mapping.
+   * @return The message's mapping.
    */
   public Map<RtTag, byte[]> mapping() {
-    return Collections.unmodifiableMap(map);
+    return map;
   }
 
   private int extractNumTags(ByteBuf msg) {
     long readNumTags = msg.readUnsignedIntLE();
 
     // Spec says max # tags can be 2^32-1, but capping at 64k tags in this implementation
-    if (readNumTags > 0xffff) {
+    if (readNumTags > 0xffffL) {
       throw new InvalidNumTagsException("invalid num_tags value " + readNumTags);
     }
 
@@ -176,7 +177,7 @@ public final class RtMessage {
       prevTag = currTag;
     }
 
-    return mapping;
+    return Collections.unmodifiableMap(mapping);
   }
 
   private int[] extractOffsets(ByteBuf msg) {
