@@ -40,13 +40,13 @@ import nearenough.protocol.RtWire;
  */
 public final class NettyClient {
 
-  // Hostname and port of the public Google Roughtime server
-  private static final String GOOGLE_SERVER_HOST = "roughtime.sandbox.google.com";
-  private static final int GOOGLE_SERVER_PORT = 2002;
+  // Hostname and port of the public int08h.com Roughtime server
+  private static final String INT08H_SERVER_HOST = "roughtime.int08h.com";
+  private static final int INT08H_SERVER_PORT = 2002;
 
-  // Long-term public key of the public Google Roughtime server
-  private static final byte[] GOOGLE_SERVER_PUBKEY = hexToBytes(
-      "7ad3da688c5c04c635a14786a70bcf30224cc25455371bf9d4a2bfb64b682534"
+  // Long-term public key of the public int08h.com Roughtime server
+  private static final byte[] INT08H_SERVER_PUBKEY = hexToBytes(
+      "016e6e0284d24c37c6e4d7d8d5b4e1d3c1949ceaa545bf875616c9dce0c9bec1"
   );
 
   private static final class RequestHandler extends SimpleChannelInboundHandler<DatagramPacket> {
@@ -59,7 +59,7 @@ public final class NettyClient {
 
       // Creates a new RoughtimeClient.
       // Behind the scenes SecureRandom will be used to generate a unique nonce.
-      this.client = new RoughtimeClient(GOOGLE_SERVER_PUBKEY);
+      this.client = new RoughtimeClient(INT08H_SERVER_PUBKEY);
     }
 
     @Override
@@ -133,7 +133,7 @@ public final class NettyClient {
   }
 
   public static void main(String[] args) throws InterruptedException {
-    InetSocketAddress addr = new InetSocketAddress(GOOGLE_SERVER_HOST, GOOGLE_SERVER_PORT);
+    InetSocketAddress addr = new InetSocketAddress(INT08H_SERVER_HOST, INT08H_SERVER_PORT);
 
     System.out.printf("Sending request to %s\n", addr);
 

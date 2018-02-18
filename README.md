@@ -14,11 +14,24 @@ time synchronisation in a secure way that doesn't depend on any particular time 
 a way that, if a time server does misbehave, clients end up with cryptographic proof of it. It was 
 created by Adam Langley and Robert Obryk.
 
-## Links
+## Resources
 * [Nearenough Github repo](https://github.com/int08h/nearenough)
 * [Roughtime project](https://roughtime.googlesource.com/roughtime)
 * My blog posts [describing Roughtime features](https://int08h.com/post/to-catch-a-lying-timeserver/) and 
   exploring the [Nearenough API and details of Roughtime messages](https://int08h.com/post/roughtime-message-anatomy/).
+  
+### Public int08h.com Roughtime Server
+
+A publicly accessible Roughtime server is available at `roughtime.int08h.com` port `2002`. The
+server's long-term public key is `016e6e0284d24c37c6e4d7d8d5b4e1d3c1949ceaa545bf875616c9dce0c9bec1`
+and can verified by querying the server's DNS `TXT` record:
+
+```bash
+$ dig -t txt roughtime.int08h.com
+...
+;; ANSWER SECTION:
+roughtime.int08h.com.  1799  IN   TXT    "016e6e0284d24c37c6e4d7d8d5b4e1d3c1949ceaa545bf875616c9dce0c9bec1"
+```
 
 ## Building
 Gradle is used to build Nearenough. Run the tests:
