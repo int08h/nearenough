@@ -16,7 +16,7 @@ dependencies {
     // local snapshot of Ed25519
     compile files('lib/eddsa-0.1.0.jar')
 
-    compile 'io.netty:netty-all:4.1.20.Final'
+    compile 'io.netty:netty-all:4.1.22.Final'
 
     testCompile 'junit:junit:4.12'
 }
@@ -34,7 +34,7 @@ task nioExample(type: JavaExec) {
     }
 }
 
-// Runs the NIO example
+// Runs the Netty example
 task nettyExample(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'nearenough.examples.NettyClient'
