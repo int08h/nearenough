@@ -19,6 +19,8 @@ created by Adam Langley and Robert Obryk.
 * [Roughtime project](https://roughtime.googlesource.com/roughtime)
 * My blog posts [describing Roughtime features](https://int08h.com/post/to-catch-a-lying-timeserver/) and 
   exploring the [Nearenough API and details of Roughtime messages](https://int08h.com/post/roughtime-message-anatomy/).
+* Cloudflare's fantastic [blog post](https://blog.cloudflare.com/roughtime/) and accompanying
+  [open-source project](https://developers.cloudflare.com/roughtime/).
   
 ### Public int08h.com Roughtime Server
 
