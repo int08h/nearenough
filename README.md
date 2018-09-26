@@ -53,8 +53,8 @@ $ ./gradlew nettyExample
 ## Quickstart
 
 ### Client Examples
-See [`examples/NioClient.java`](../master/examples/NioClient.java) and 
-[`examples/NettyClient.java`](../master/examples/NettyClient.java) for examples of how to send a 
+See [`examples/NioClient.java`](../master/src/main/java/nearenough/examples/NioClient.java) and 
+[`examples/NettyClient.java`](../master/src/main/java/nearenough/examples/NettyClient.java) for examples of how to send a 
 request to a Roughtime server and process the response.
 
 ### DIY Client
@@ -85,7 +85,7 @@ if (client.isResponseValid()) {
   System.out.println("Invalid response: " + client.invalidResponseCause().getMessage());
 } 
 ```
-See the javadocs in [`RoughtimeClient.java`](../master/src/nearenough/client/RoughtimeClient.java) 
+See the javadocs in [`RoughtimeClient.java`](../master/src/main/java/nearenough/client/RoughtimeClient.java) 
 for more information.
 
 ## Implementation Status
