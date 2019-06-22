@@ -16,7 +16,7 @@ dependencies {
     // local snapshot of Ed25519
     compile files('lib/eddsa-0.1.0.jar')
 
-    compile 'io.netty:netty-all:4.1.32.Final'
+    compile 'io.netty:netty-all:4.1.36.Final'
 
     testCompile 'junit:junit:4.12'
 }
