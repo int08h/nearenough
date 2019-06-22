@@ -13,10 +13,9 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 
 dependencies {
-    // local snapshot of Ed25519
-    compile files('lib/eddsa-0.1.0.jar')
-
     compile 'io.netty:netty-all:4.1.32.Final'
+
+    compile 'net.i2p.crypto:eddsa:0.1.0'
 
     testCompile 'junit:junit:4.12'
 }
