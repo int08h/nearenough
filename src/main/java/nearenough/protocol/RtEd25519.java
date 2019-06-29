@@ -38,7 +38,7 @@ import java.security.SignatureException;
 public final class RtEd25519 {
 
   private static final EdDSAParameterSpec ED25519_SPEC = EdDSANamedCurveTable.getByName(
-      EdDSANamedCurveTable.CURVE_ED25519_SHA512
+      EdDSANamedCurveTable.ED_25519
   );
 
   /**
