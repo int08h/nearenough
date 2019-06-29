@@ -96,6 +96,7 @@ Nearenough is stable.
   
 ## Contributors
 * Stuart Stock, original author and current maintainer (stuart {at} int08h.com)
+* Michal Tajchert (Guthub @tajchert)
 
 If you would like to contribute to Nearenough, please see the guidelines in 
 [CONTRIBUTING.md](../master/CONTRIBUTING.md).
