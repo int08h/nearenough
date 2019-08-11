@@ -13,7 +13,7 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 
 dependencies {
-    compile 'io.netty:netty-all:4.1.36.Final'
+    compile 'io.netty:netty-all:4.1.38.Final'
 
     compile 'net.i2p.crypto:eddsa:0.3.0'
 
