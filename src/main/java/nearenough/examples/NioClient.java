@@ -48,77 +48,78 @@ public final class NioClient {
     System.out.printf("Sending request to %s\n", addr);
 
     // Nonblocking NIO UDP channel for the remote Roughtime server
-    DatagramChannel channel = DatagramChannel.open(StandardProtocolFamily.INET);
-    channel.configureBlocking(false);
+    try (DatagramChannel channel = DatagramChannel.open(StandardProtocolFamily.INET)) {
+      channel.configureBlocking(false);
 
-    // Create a new RoughtimeClient instance
-    RoughtimeClient client = new RoughtimeClient(INT08H_SERVER_PUBKEY);
+      // Create a new RoughtimeClient instance
+      RoughtimeClient client = new RoughtimeClient(INT08H_SERVER_PUBKEY);
 
-    // Create a request message
-    RtMessage request = client.createRequest();
+      // Create a request message
+      RtMessage request = client.createRequest();
 
-    // Encode for transmission
-    ByteBuf encodedRequest = RtWire.toWire(request);
+      // Encode for transmission
+      ByteBuf encodedRequest = RtWire.toWire(request);
 
-    // Send the message
-    channel.send(encodedRequest.nioBuffer(), addr);
-    int bytesWritten = channel.send(encodedRequest.nioBuffer(), addr);
+      // Send the message
+      channel.send(encodedRequest.nioBuffer(), addr);
+      int bytesWritten = channel.send(encodedRequest.nioBuffer(), addr);
 
-    // Ensure the message was sent
-    if (bytesWritten != encodedRequest.readableBytes()) {
-      throw new RuntimeException("failed to fully write request");
-    }
-
-    // Space for receiving the reply
-    ByteBuffer recvBuf = ByteBuffer.allocate(4096);
-    int attempts = 50;
-
-    // Simple loop to look for the first response. Wait for max 5 seconds.
-    while (--attempts > 0) {
-      recvBuf.clear();
-      channel.receive(recvBuf);
-      recvBuf.flip();
-      if (recvBuf.hasRemaining()) {
-        break;
+      // Ensure the message was sent
+      if (bytesWritten != encodedRequest.readableBytes()) {
+        throw new RuntimeException("failed to fully write request");
       }
-      Thread.sleep(100L);
-    }
 
-    if (recvBuf.hasRemaining()) {
-      // A reply from the server has been received
-      System.out.printf("Read message of %d bytes from %s:\n", recvBuf.remaining(), addr);
+      // Space for receiving the reply
+      ByteBuffer recvBuf = ByteBuffer.allocate(4096);
+      int attempts = 50;
 
-      // Parse the response
-      RtMessage response = RtMessage.fromByteBuffer(recvBuf);
-      System.out.println(response);
+      // Simple loop to look for the first response. Wait for max 5 seconds.
+      while (--attempts > 0) {
+        recvBuf.clear();
+        channel.receive(recvBuf);
+        recvBuf.flip();
+        if (recvBuf.hasRemaining()) {
+          break;
+        }
+        Thread.sleep(100L);
+      }
 
-      // Validate the response. Checks that the message is well-formed, all signatures are valid,
-      // and our nonce is present in the response.
-      client.processResponse(response);
+      if (recvBuf.hasRemaining()) {
+        // A reply from the server has been received
+        System.out.printf("Read message of %d bytes from %s:\n", recvBuf.remaining(), addr);
 
-      if (client.isResponseValid()) {
-        // Validation passed, the response is good
+        // Parse the response
+        RtMessage response = RtMessage.fromByteBuffer(recvBuf);
+        System.out.println(response);
 
-        // The "midpoint" is the Roughtime server's reported timestamp (in microseconds). And the
-        // "radius" is a span of uncertainty around that midpoint. A Roughtime server asserts that
-        // its "true time" lies within the span.
-        Instant midpoint = Instant.ofEpochMilli(client.midpoint() / 1_000L);
-        int radiusSec = client.radius() / 1_000_000;
-        System.out.println("midpoint    : " + midpoint + " (radius " + radiusSec + " sec)");
+        // Validate the response. Checks that the message is well-formed, all signatures are valid,
+        // and our nonce is present in the response.
+        client.processResponse(response);
 
-        // For comparison, also print the local clock. If the midpoint and your local time
-        // are widely different, check your local machine's time sync!
-        Instant local = Instant.now();
-        System.out.println("local clock : " + local);
+        if (client.isResponseValid()) {
+          // Validation passed, the response is good
+
+          // The "midpoint" is the Roughtime server's reported timestamp (in microseconds). And the
+          // "radius" is a span of uncertainty around that midpoint. A Roughtime server asserts that
+          // its "true time" lies within the span.
+          Instant midpoint = Instant.ofEpochMilli(client.midpoint() / 1_000L);
+          int radiusSec = client.radius() / 1_000_000;
+          System.out.println("midpoint    : " + midpoint + " (radius " + radiusSec + " sec)");
+
+          // For comparison, also print the local clock. If the midpoint and your local time
+          // are widely different, check your local machine's time sync!
+          Instant local = Instant.now();
+          System.out.println("local clock : " + local);
+
+        } else {
+          // Validation failed. Print out the reason why.
+          System.out.println("Response INVALID: " + client.invalidResponseCause().getMessage());
+        }
 
       } else {
-        // Validation failed. Print out the reason why.
-        System.out.println("Response INVALID: " + client.invalidResponseCause().getMessage());
+        // No reply within five seconds
+        System.out.println("No response from " + addr);
       }
-
-    } else {
-      // No reply within five seconds
-      System.out.println("No response from " + addr);
     }
 
     System.exit(0);

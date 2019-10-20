@@ -86,4 +86,7 @@ public final class RtConstants {
    * Value prepended to nodes prior to hashing
    */
   public static final byte TREE_NODE_TWEAK = 0x01;
+
+  // utility class
+  private RtConstants() {}
 }
