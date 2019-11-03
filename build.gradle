@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    compile 'io.netty:netty-all:4.1.42.Final'
+    compile 'io.netty:netty-all:4.1.43.Final'
 
     compile 'net.i2p.crypto:eddsa:0.3.0'
 
